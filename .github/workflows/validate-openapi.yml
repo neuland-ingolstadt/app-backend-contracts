@@ -20,4 +20,17 @@ jobs:
           node-version: 22
 
       - name: Lint OpenAPI
-        run: npx --yes @redocly/cli@2.47.0 lint oas/backend-core-api-v0.yaml --format=github-actions
+        shell: bash
+        run: |
+          mapfile -d '' specs < <(
+            find oas -type f \( -name '*.yaml' -o -name '*.yml' -o -name '*.json' \) -print0 2>/dev/null
+          )
+
+          if [[ ${#specs[@]} -eq 0 ]]; then
+            echo 'No OpenAPI files found under oas/'
+            exit 0
+          fi
+
+          for spec in "${specs[@]}"; do
+            npx --yes @redocly/cli@2.47.0 lint "$spec" --format=github-actions
+          done

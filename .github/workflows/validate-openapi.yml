@@ -1,0 +1,23 @@
+name: Validate OpenAPI
+
+on:
+  pull_request:
+    paths:
+      - 'oas/**/*.yaml'
+      - 'oas/**/*.yml'
+      - 'oas/**/*.json'
+      - '.github/workflows/validate-openapi.yml'
+
+jobs:
+  openapi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Lint OpenAPI
+        run: npx --yes @redocly/cli@2.47.0 lint oas/backend-core-api-v0.yaml --format=github-actions

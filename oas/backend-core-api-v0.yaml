@@ -132,7 +132,6 @@ components:
         format: int64
         minimum: 1
       example: 67
-
     IncludeInactiveQueryParam:
       name: includeInactive
       in: query

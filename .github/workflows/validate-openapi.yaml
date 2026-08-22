@@ -1,0 +1,33 @@
+name: Validate OpenAPI
+
+on:
+  pull_request:
+    paths:
+      - 'oas/**/*.yaml'
+      - '.github/workflows/validate-openapi.yaml'
+
+jobs:
+  openapi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Redocly CLI
+        run: npm i -g @redocly/cli@2.47.0
+
+      - name: Lint OpenAPI
+        shell: bash
+        run: |
+          mapfile -d '' specs < <(
+            find oas -type f -name '*.yaml' -print0 2>/dev/null
+          )
+
+          if [[ ${#specs[@]} -eq 0 ]]; then
+            echo 'No OpenAPI files found under oas/'
+            exit 0
+          fi
+
+          for spec in "${specs[@]}"; do
+            redocly lint "$spec" --format=github-actions
+          done

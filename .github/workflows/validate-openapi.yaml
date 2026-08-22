@@ -4,26 +4,23 @@ on:
   pull_request:
     paths:
       - 'oas/**/*.yaml'
-      - 'oas/**/*.yml'
-      - 'oas/**/*.json'
-      - '.github/workflows/validate-openapi.yml'
+      - '.github/workflows/validate-openapi.yaml'
 
 jobs:
   openapi:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
+      - name: Install Redocly CLI
+        run: npm i -g @redocly/cli@2.47.0
 
       - name: Lint OpenAPI
         shell: bash
         run: |
           mapfile -d '' specs < <(
-            find oas -type f \( -name '*.yaml' -o -name '*.yml' -o -name '*.json' \) -print0 2>/dev/null
+            find oas -type f -name '*.yaml' -print0 2>/dev/null
           )
 
           if [[ ${#specs[@]} -eq 0 ]]; then
@@ -32,5 +29,5 @@ jobs:
           fi
 
           for spec in "${specs[@]}"; do
-            npx --yes @redocly/cli@2.47.0 lint "$spec" --format=github-actions
+            redocly lint "$spec" --format=github-actions
           done

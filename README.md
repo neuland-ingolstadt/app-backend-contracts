@@ -12,7 +12,7 @@ Contract-first API specifications shared by:
 
 ## Contents (planned)
 
-- OpenAPI 3.1 specs (`openapi/common.yaml`, `openapi/core-api.yaml`, `openapi/food-service.yaml`)
+- OpenAPI 3.2 specs for all new backend services
 - Generated Java DTOs and server interfaces
 - Contract test harness
 

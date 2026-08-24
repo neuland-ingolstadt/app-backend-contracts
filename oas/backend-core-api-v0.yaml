@@ -218,7 +218,7 @@ components:
       schema:
         type: integer
         format: int64
-      example:  77 
+      example: 77 
 
 
   responses:
@@ -486,12 +486,14 @@ components:
         description: 
           type: [ string, 'null' ]
           description: Description of the report
-          examples: "This room cannot be found here"  
+          examples: 
+            - This room cannot be found here
 
         room:
           type: string
           description: Room name
-          examples: "G201"
+          examples: 
+            - G201
 
     RoomReportResponse:
       type: object
@@ -524,7 +526,8 @@ components:
         room:
           type: string
           description: Room name
-          examples: "G201"
+          examples: 
+            - G201
 
         reason:
           $ref: '#/components/schemas/RoomReportCategoryEnum'
@@ -535,7 +538,8 @@ components:
         description:
           type: [ string, 'null' ]
           description: Description of the report
-          examples: "This room cannot be found here" 
+          examples: 
+            - This room cannot be found here
 
         createdAt:
           type: string

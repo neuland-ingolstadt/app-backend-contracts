@@ -116,8 +116,8 @@ paths:
         default:
           $ref: '#/components/responses/Problem'
   /room-reports: 
-    post: # POST method to create a room report
-      tags: [ roomReports ] # add tag for the room report
+    post:
+      tags: [ roomReports ]
       summary: Create a new room report
       requestBody:
         required: true
@@ -474,17 +474,17 @@ components:
       type: object
       description: Input data required to create a new report about incorrect room data
       required: 
-        - reason # description is not required!
+        - reason
         - room
       properties:
         reason:
           $ref: '#/components/schemas/RoomReportCategoryEnum'
           description: Reason for the report
           examples:
-            - [ WRONG_DESCRIPTION, WRONG_LOCATION ] # added examples
+            - [ WRONG_DESCRIPTION, WRONG_LOCATION ]
 
         description: 
-          type: [ string, 'null' ] # description is nullable
+          type: [ string, 'null' ]
           description: Description of the report
           examples: "This room cannot be found here"  
 
@@ -543,11 +543,10 @@ components:
           description: Creation date (date and time) of the report
 
         resolvedAt:
-          type: [ string, 'null' ] # resolvedAt can be nullable
+          type: [ string, 'null' ]
           format: date-time
           description: Resolved date of the report or null if not resolved
 
-    # array for getting all room reports
     RoomReportListResponse:
       type: object
       required:
@@ -565,7 +564,7 @@ components:
         - resolved
       properties:
         resolved: 
-          type: boolean # legacy backend allows to set resolved both to true and false
+          type: boolean
 
     RoomReportCategoryEnum:
       type: string

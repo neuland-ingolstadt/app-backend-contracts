@@ -1,4 +1,4 @@
-# neuland.app-contracts
+# app-backend-contracts
 
 OpenAPI contracts and generated models for **Neuland Backend 2.0**.
 
@@ -6,9 +6,9 @@ OpenAPI contracts and generated models for **Neuland Backend 2.0**.
 
 Contract-first API specifications shared by:
 
-- [neuland.app-core-api](https://github.com/neuland-ingolstadt/neuland.app-core-api)
-- [neuland.app-food-service](https://github.com/neuland-ingolstadt/neuland.app-food-service)
-- [neuland.app-cloud-gateway](https://github.com/neuland-ingolstadt/neuland.app-cloud-gateway)
+- [app-backend-core](https://github.com/neuland-ingolstadt/app-backend-core)
+- [app-backend-food](https://github.com/neuland-ingolstadt/app-backend-food)
+- [app-backend-cloud-gateway](https://github.com/neuland-ingolstadt/app-backend-cloud-gateway)
 
 ## Contents (planned)
 

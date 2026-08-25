@@ -16,6 +16,8 @@ tags:
     description: Everything about announcements
   - name: roomReports
     description: Creating, viewing and resolving room reports
+  - name: universitySports
+    description: Everything regarding Sports 
 
 paths:
   /announcements:
@@ -182,6 +184,103 @@ paths:
           description: Room report not found
         default:
           $ref: '#/components/responses/Problem'
+  /university-sports:
+    get:
+      tags: [ universitySports ]
+      summary: Get all sports
+      security: [ ]
+      responses:
+        '200':
+          description: Sports
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SportsListResponse'
+        default:
+          $ref: '#/components/responses/Problem'
+
+    post:
+      tags: [ universitySports ]
+      summary: Create a sport
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsCreateRequest'
+      responses:
+        '201':
+          description: Sport created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sports'
+        '401':
+          description: Unauthorized
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /university-sports/{sportsId}:
+    parameters:
+      - $ref: '#/components/parameters/SportsId'
+
+    get:
+      tags: [ universitySports ]
+      summary: Get a sport by ID
+      security: [ ]
+      responses:
+        '200':
+          description: Sport
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sports'
+        '404':
+          description: Sport not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+    patch:
+      tags: [ universitySports ]
+      summary: Update a sport
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsPatchRequest'
+      responses:
+        '200':
+          description: Sport updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sports'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Sport not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+    delete:
+      tags: [ universitySports ]
+      summary: Delete a sport
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: Sport deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Sport not found
+        default:
+          $ref: '#/components/responses/Problem'
 
 components:
   securitySchemes:
@@ -216,6 +315,15 @@ components:
         type: integer
         format: int64
       example: 77 
+    SportsId:
+      name: sportsId
+      in: path
+      required: true
+      description: Unique identifier of the sport.
+      schema:
+        type: string
+        format: uuid
+      example: '08a16b83-9094-4e89-8c05-2ccadd5c1c7e'
 
   responses:
     Problem:
@@ -577,3 +685,163 @@ components:
         - NOT_EXISTING
         - MISSING
         - OTHER
+
+    Sports:
+      allOf:
+        - $ref: '#/components/schemas/SportsWrite'
+        - type: object
+          required:
+            - id
+            - createdAt
+            - updatedAt
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Unique identifier of the sport
+              examples: [ '08a16b83-9094-4e89-8c05-2ccadd5c1c7e' ]
+
+            createdAt:
+              type: string
+              format: date-time
+              description: Date and time when the sport was created
+              examples:
+                - '2022-03-06T08:23:45Z'
+
+            updatedAt:
+              type: string
+              format: date-time
+              description: Date and time when the sport was last updated
+              examples:
+                - '2022-03-06T08:23:45Z'
+
+    SportsWrite:
+      type: object
+      properties:
+        title:
+          type: object
+          description: Localized title
+          propertyNames:
+            $ref: '#/components/schemas/LanguageEnum'
+          additionalProperties:
+            type: string
+            minLength: 1
+          examples:
+            - { de: 'Basketball', en: 'Basketball' }
+
+        description:
+          type: object
+          description: Localized description
+          propertyNames:
+            $ref: '#/components/schemas/LanguageEnum'
+          additionalProperties:
+            type: string
+            minLength: 1
+          examples:
+            - { de: 'Offenes Training, keine Anmeldung nötig.', en: 'Open training, no registration required.' }
+
+        campus:
+          description: Campus at which the sport is being held
+          $ref: '#/components/schemas/CampusEnum'
+          examples: [ INGOLSTADT ]
+
+        location:
+          type: string
+          description: The place where the sport is being held
+          examples:
+            - 'Sporthalle 1'
+
+        weekday:
+          description: The day on which the sport takes place
+          $ref: '#/components/schemas/WeekdayEnum'
+          examples: [ MONDAY ]
+
+        startTime:
+          type: string
+          format: time
+          description: Time when the sport starts
+          examples:
+            - '18:00:00'
+
+        endTime:
+          type: string
+          format: time
+          description: Time when the sport ends
+          examples:
+            - '19:30:00'
+
+        requiresRegistration:
+          type: boolean
+          description: Whether the sport requires registration
+          examples: [ true ]
+
+        invitationLink:
+          type: [ string, 'null' ]
+          format: uri
+          description: Optional invitation link associated with the sport
+          examples:
+            - 'https://chat.example.com/invite/abc123'
+
+        eMail:
+          type: [ string, 'null' ]
+          format: idn-email
+          description: Optional contact email for the sport
+          examples:
+            - 'test@example.com'
+
+        sportsCategory:
+          type: string
+          description: Free-text category the sport belongs to. Not a fixed enum
+          examples:
+            - 'Basketball'
+
+    SportsCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/SportsWrite'
+        - type: object
+          required:
+            - title
+            - description
+            - campus
+            - location
+            - weekday
+            - startTime
+            - endTime
+            - requiresRegistration
+            - sportsCategory
+
+    SportsPatchRequest:
+      allOf:
+        - $ref: '#/components/schemas/SportsWrite'
+        - type: object
+          minProperties: 1
+
+    SportsListResponse:
+      type: object
+      required:
+        - sports
+      properties:
+        sports:
+          type: array
+          description: All currently active sports
+          items:
+            $ref: '#/components/schemas/Sports'
+
+    CampusEnum:
+      type: string
+      description: The campus at which the sport is being held
+      enum:
+        - INGOLSTADT
+        - NEUBURG
+
+    WeekdayEnum:
+      type: string
+      description: Possible weekdays
+      enum:
+        - MONDAY
+        - TUESDAY
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+        - SUNDAY

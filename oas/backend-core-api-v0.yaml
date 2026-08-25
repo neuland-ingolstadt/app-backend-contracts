@@ -14,6 +14,8 @@ security:
 tags:
   - name: announcements
     description: Everything about announcements
+  - name: roomReports
+    description: Creating, viewing and resolving room reports
 
 paths:
   /announcements:
@@ -113,6 +115,73 @@ paths:
           description: Announcement not found
         default:
           $ref: '#/components/responses/Problem'
+  /room-reports: 
+    post:
+      tags: [ roomReports ]
+      summary: Create a new room report
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoomReportRequest'
+      responses:
+        '201':
+          description: Room report created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomReportResponse'
+        default: 
+          $ref: '#/components/responses/Problem'
+
+    get:
+      tags: [ roomReports ]
+      summary: Get all room reports
+      description: Contains user reports of wrong room data. Only available for admin users
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Room reports retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomReportListResponse' 
+        '401':
+          description: Unauthorized
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /room-reports/{roomReportId}: 
+    patch:
+      tags: [ roomReports ]
+      summary: Resolve a room report
+      description: Marks the specified room report as resolved. Only available for admin users
+      security:
+        - bearerAuth: [ ]
+      parameters: 
+        - $ref: '#/components/parameters/RoomReportId'
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomReportPatchRequest'
+      responses:
+        '200':
+          description: Room report resolved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomReportResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Room report not found
+        default:
+          $ref: '#/components/responses/Problem'
 
 components:
   securitySchemes:
@@ -138,7 +207,15 @@ components:
       description: Whether inactive announcements should be included or not
       schema:
         type: boolean
-
+    RoomReportId:
+      name: roomReportId
+      in: path
+      required: true
+      description: ID of the room report to resolve
+      schema:
+        type: integer
+        format: int64
+      example: 77 
 
   responses:
     Problem:
@@ -388,3 +465,115 @@ components:
           type: string
           format: uri-reference
           description: URI reference identifying the specific occurrence of the problem
+    
+    CreateRoomReportRequest: 
+      type: object
+      description: Input data required to create a new report about incorrect room data
+      required: 
+        - reason
+        - room
+      properties:
+        reason:
+          $ref: '#/components/schemas/RoomReportCategoryEnum'
+          description: Reason for the report
+          examples:
+            - WRONG_DESCRIPTION
+            - WRONG_LOCATION
+
+        description: 
+          type: [ string, 'null' ]
+          description: Description of the report
+          examples: 
+            - This room cannot be found here
+
+        room:
+          type: string
+          description: Room name
+          examples: 
+            - G201
+
+    RoomReportResponse:
+      type: object
+      description: Response returned after creating and resolving a room report
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Unique identifier of the room report
+          examples: [ 77 ]
+
+    RoomReport:
+      type: object
+      description: A user report of wrong room data
+      required:
+        - id
+        - room
+        - reason
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the room report
+          examples: [ 77 ]
+
+        room:
+          type: string
+          description: Room name
+          examples: 
+            - G201
+
+        reason:
+          $ref: '#/components/schemas/RoomReportCategoryEnum'
+          description: Reason for the report
+          examples:
+            - WRONG_DESCRIPTION
+            - WRONG_LOCATION
+
+        description:
+          type: [ string, 'null' ]
+          description: Description of the report
+          examples: 
+            - This room cannot be found here
+
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation date (date and time) of the report
+
+        resolvedAt:
+          type: [ string, 'null' ]
+          format: date-time
+          description: Resolved date of the report or null if not resolved
+
+    RoomReportListResponse:
+      type: object
+      required:
+        - roomReports
+      properties: 
+        roomReports: 
+          type: array
+          description: All room reports
+          items:
+            $ref: '#/components/schemas/RoomReport'
+
+    RoomReportPatchRequest:
+      type: object
+      required: 
+        - resolved
+      properties:
+        resolved: 
+          type: boolean
+
+    RoomReportCategoryEnum:
+      type: string
+      description: Reason for the room report
+      enum:
+        - WRONG_DESCRIPTION
+        - WRONG_LOCATION
+        - NOT_EXISTING
+        - MISSING
+        - OTHER

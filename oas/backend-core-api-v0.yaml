@@ -14,7 +14,7 @@ security:
 tags:
   - name: announcements
     description: Everything about announcements
-  - name: roomReports 
+  - name: roomReports
     description: Creating, viewing and resolving room reports
 
 paths:
@@ -119,13 +119,13 @@ paths:
     post:
       tags: [ roomReports ]
       summary: Create a new room report
+      security: [ ]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateRoomReportRequest'
-
       responses:
         '201':
           description: Room report created successfully
@@ -133,10 +133,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RoomReportResponse'
-        '401':
-          description: Unauthorized # renamed to unauthorized
-        default: # default to
-          $ref: '#/components/responses/Problem' # problem response (defined in exisiting file)
+        default: 
+          $ref: '#/components/responses/Problem'
 
     get:
       tags: [ roomReports ]
@@ -171,7 +169,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RoomReportPatchRequest'
-
       responses:
         '200':
           description: Room report resolved successfully
@@ -219,7 +216,6 @@ components:
         type: integer
         format: int64
       example: 77 
-
 
   responses:
     Problem:
@@ -481,7 +477,8 @@ components:
           $ref: '#/components/schemas/RoomReportCategoryEnum'
           description: Reason for the report
           examples:
-            - [ WRONG_DESCRIPTION, WRONG_LOCATION ]
+            - WRONG_DESCRIPTION
+            - WRONG_LOCATION
 
         description: 
           type: [ string, 'null' ]
@@ -533,7 +530,8 @@ components:
           $ref: '#/components/schemas/RoomReportCategoryEnum'
           description: Reason for the report
           examples:
-            - [ WRONG_DESCRIPTION, WRONG_LOCATION ]
+            - WRONG_DESCRIPTION
+            - WRONG_LOCATION
 
         description:
           type: [ string, 'null' ]

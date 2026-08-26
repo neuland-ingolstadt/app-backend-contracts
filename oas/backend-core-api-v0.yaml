@@ -16,6 +16,8 @@ tags:
     description: Everything about announcements
   - name: roomReports
     description: Creating, viewing and resolving room reports
+  - name: auditLogs
+    description: Get the audit log entries
 
 paths:
   /announcements:
@@ -182,6 +184,28 @@ paths:
           description: Room report not found
         default:
           $ref: '#/components/responses/Problem'
+  
+  /audit-logs:
+    get:
+      tags: [ auditLogs ]
+      summary: Get audit logs
+      description: Contains all audit log entries. Only available for admin users
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/AuditLogLimit'
+        - $ref: '#/components/parameters/AuditLogOffset'
+      responses:
+        '200':
+          description: Audit logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogListResponse'
+        '401':
+          description: Unauthorized
+        default:
+          $ref: '#/components/responses/Problem'
 
 components:
   securitySchemes:
@@ -215,7 +239,27 @@ components:
       schema:
         type: integer
         format: int64
-      example: 77 
+      example: 77
+    AuditLogLimit:
+      name: limit
+      in: query
+      description: Maximum number of audit log entries to return
+      required: false
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+      example: 50
+    AuditLogOffset:
+      name: offset
+      in: query
+      description: Number of audit log entries to skip
+      required: false
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+      example: 10
 
   responses:
     Problem:
@@ -577,3 +621,68 @@ components:
         - NOT_EXISTING
         - MISSING
         - OTHER
+
+    AuditLogListResponse:
+      type: object
+      required:
+        - auditLogs
+      properties:
+        auditLogs:
+          type: array
+          description: All audit log entries
+          items:
+            $ref: '#/components/schemas/AuditLogEntry'
+
+    AuditLogEntry:
+      type: object
+      required:
+        - id
+        - entity
+        - operation
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Unique identifier of the audit log entry
+          examples: [ 77 ]
+
+        entity:
+          type: string
+          description: Entity of the audit log entry
+          examples:
+            - RoomReport
+            - Announcement
+
+        entityId:
+          type: [ integer, 'null' ]
+          format: int64
+          description: Entity ID of the audit log entry
+          examples: [ 77 ]
+
+        operation:
+          type: string
+          description: Operation of the audit log entry
+          examples: 
+            - CREATE
+            - UPDATE
+
+        name:
+          type: [ string, 'null' ]
+          description: Name of the user who made the mutation
+          examples: 
+            - Max Mustermann
+
+        userId:
+          type: [ string, 'null' ]
+          description: User ID of the user who made the mutation
+          examples:
+            - user-123
+
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation date and time of the audit log entry
+          examples:
+            - '2022-03-06T08:23:45.000Z'

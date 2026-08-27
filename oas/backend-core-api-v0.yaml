@@ -194,7 +194,7 @@ paths:
         - bearerAuth: [ ]
       parameters:
         - $ref: '#/components/parameters/AuditLogLimit'
-        - $ref: '#/components/parameters/AuditLogOffset'
+        - $ref: '#/components/parameters/AuditLogCursor'
       responses:
         '200':
           description: Audit logs retrieved successfully
@@ -250,16 +250,14 @@ components:
         format: int64
         minimum: 1
       example: 50
-    AuditLogOffset:
-      name: offset
+    AuditLogCursor:
+      name: cursor
       in: query
-      description: Number of audit log entries to skip
+      description: Cursor indicating where to continue retrieving audit log entries
       required: false
       schema:
-        type: integer
-        format: int64
-        minimum: 0
-      example: 10
+        type: string
+      example: eyJpZCI6MTAwfQ
 
   responses:
     Problem:
@@ -632,6 +630,11 @@ components:
           description: All audit log entries
           items:
             $ref: '#/components/schemas/AuditLogEntry'
+        nextCursor:
+          type: [ string, 'null' ]
+          description: Cursor to use to retrieve the next page of audit log entries
+          examples:
+            - eyJpZCI6MTAwfQ
 
     AuditLogEntry:
       type: object
@@ -662,11 +665,7 @@ components:
           examples: [ 77 ]
 
         operation:
-          type: string
-          description: Operation of the audit log entry
-          examples: 
-            - CREATE
-            - UPDATE
+          $ref: '#/components/schemas/AuditLogOperationEnum'
 
         name:
           type: [ string, 'null' ]
@@ -686,3 +685,11 @@ components:
           description: Creation date and time of the audit log entry
           examples:
             - '2022-03-06T08:23:45.000Z'
+
+    AuditLogOperationEnum:
+      type: string
+      description: Operation of the audit log entry
+      enum:
+        - CREATE
+        - UPDATE
+        - DELETE

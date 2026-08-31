@@ -18,6 +18,8 @@ tags:
     description: Creating, viewing and resolving room reports
   - name: auditLogs
     description: Get the audit log entries
+  - name: food
+    description: Everything about the food offering of mensas and restaurants
 
 paths:
   /announcements:
@@ -207,6 +209,46 @@ paths:
         default:
           $ref: '#/components/responses/Problem'
 
+  /food/meals:
+    get:
+      tags: [ food ]
+      summary: Get meals
+      description: Retrieve meals offered by restaurants within a specified date range
+      parameters:
+        - $ref: '#/components/parameters/Restaurants'
+        - $ref: '#/components/parameters/MealDateFrom'
+        - $ref: '#/components/parameters/MealDateTo'
+      responses:
+        '200':
+          description: Meals retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meal'
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /food/meals/{mealId}:
+    parameters:
+      - $ref: '#/components/parameters/MealId'
+    get:
+      tags: [ food ]
+      summary: Get a meal by ID
+      description: Retrieve a specific meal by its unique identifier
+      responses:
+        '200':
+          description: Meal retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meal'
+        '404':
+          description: Meal not found
+        default:
+          $ref: '#/components/responses/Problem'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -258,6 +300,44 @@ components:
       schema:
         type: string
       example: eyJpZCI6MTAwfQ
+
+    Restaurants:
+      name: restaurants
+      in: query
+      required: true
+      description: Restaurant(s) for which to retrieve meals
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/Restaurant'
+        minItems: 1
+        uniqueItems: true
+
+    MealDateFrom:
+      name: mealDateFrom
+      in: query
+      required: true
+      description: Start date for which to retrieve meals (inclusive)
+      schema:
+        type: string
+        format: date
+
+    MealDateTo:
+      name: mealDateTo
+      in: query
+      required: true
+      description: End date for which to retrieve meals (inclusive)
+      schema:
+        type: string
+        format: date
+
+    MealId:
+      name: mealId
+      in: path
+      required: true
+      description: Unique identifier of the meal on the specific day
+      schema:
+        type: string
 
   responses:
     Problem:
@@ -759,6 +839,7 @@ components:
         - price
         - originalLanguage
         - static
+        - restaurant
       properties:
         id:
           type: string

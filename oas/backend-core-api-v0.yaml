@@ -306,12 +306,15 @@ components:
       in: query
       required: true
       description: Restaurant(s) for which to retrieve meals
+      style: form
+      explode: false
       schema:
         type: array
         items:
           $ref: '#/components/schemas/Restaurant'
         minItems: 1
         uniqueItems: true
+      example: [ INGOLSTADT_MENSA, REIMANNS ]
 
     MealDateFrom:
       name: mealDateFrom

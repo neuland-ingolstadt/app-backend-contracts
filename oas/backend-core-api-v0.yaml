@@ -226,8 +226,9 @@ paths:
             application/json:
               schema:
                 type: array
+                description: Days within the requested range that have at least one meal. Days without meals are omitted.
                 items:
-                  $ref: '#/components/schemas/Meal'
+                  $ref: '#/components/schemas/MealDay'
         default:
           $ref: '#/components/responses/Problem'
 
@@ -778,6 +779,23 @@ components:
         - CREATE
         - UPDATE
         - DELETE
+
+    MealDay:
+      type: object
+      description: Meals offered on a specific day, across all requested restaurants
+      required:
+        - date
+        - meals
+      properties:
+        date:
+          type: string
+          format: date
+          description: Day on which the meals are offered
+        meals:
+          type: array
+          description: Meals offered on this day
+          items:
+            $ref: '#/components/schemas/Meal'
 
     Meal:
       type: object

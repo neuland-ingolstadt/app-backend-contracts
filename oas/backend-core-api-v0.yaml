@@ -214,8 +214,7 @@ paths:
       tags: [ food ]
       summary: Get meals
       description: Retrieve meals offered by restaurants within a specified date range
-      security:
-        - bearerAuth: [ ]
+      security: [ ]
       parameters:
         - $ref: '#/components/parameters/Restaurants'
         - $ref: '#/components/parameters/MealDateFrom'
@@ -239,8 +238,7 @@ paths:
       tags: [ food ]
       summary: Get a meal by ID
       description: Retrieve a specific meal by its unique identifier
-      security:
-        - bearerAuth: [ ]
+      security: [ ]
       responses:
         '200':
           description: Meal retrieved successfully

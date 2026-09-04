@@ -18,6 +18,8 @@ tags:
     description: Creating, viewing and resolving room reports
   - name: auditLogs
     description: Get the audit log entries
+  - name: food
+    description: Everything about the food offering of mensas and restaurants
 
 paths:
   /announcements:
@@ -207,6 +209,49 @@ paths:
         default:
           $ref: '#/components/responses/Problem'
 
+  /food/meals:
+    get:
+      tags: [ food ]
+      summary: Get meals
+      description: Retrieve meals offered by restaurants within a specified date range
+      security: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Restaurants'
+        - $ref: '#/components/parameters/MealDateFrom'
+        - $ref: '#/components/parameters/MealDateTo'
+      responses:
+        '200':
+          description: Meals retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Days within the requested range that have at least one meal. Days without meals are omitted.
+                items:
+                  $ref: '#/components/schemas/MealDay'
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /food/meals/{mealId}:
+    parameters:
+      - $ref: '#/components/parameters/MealId'
+    get:
+      tags: [ food ]
+      summary: Get a meal by ID
+      description: Retrieve a specific meal by its unique identifier
+      security: [ ]
+      responses:
+        '200':
+          description: Meal retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meal'
+        '404':
+          description: Meal not found
+        default:
+          $ref: '#/components/responses/Problem'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -258,6 +303,47 @@ components:
       schema:
         type: string
       example: eyJpZCI6MTAwfQ
+
+    Restaurants:
+      name: restaurants
+      in: query
+      required: true
+      description: Restaurant(s) for which to retrieve meals
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/Restaurant'
+        minItems: 1
+        uniqueItems: true
+      example: [ INGOLSTADT_MENSA, REIMANNS ]
+
+    MealDateFrom:
+      name: mealDateFrom
+      in: query
+      required: true
+      description: Start date for which to retrieve meals (inclusive)
+      schema:
+        type: string
+        format: date
+
+    MealDateTo:
+      name: mealDateTo
+      in: query
+      required: true
+      description: End date for which to retrieve meals (inclusive)
+      schema:
+        type: string
+        format: date
+
+    MealId:
+      name: mealId
+      in: path
+      required: true
+      description: Unique identifier of the meal on the specific day
+      schema:
+        type: string
 
   responses:
     Problem:
@@ -693,3 +779,230 @@ components:
         - CREATE
         - UPDATE
         - DELETE
+
+    MealDay:
+      type: object
+      description: Meals offered on a specific day, across all requested restaurants
+      required:
+        - date
+        - meals
+      properties:
+        date:
+          type: string
+          format: date
+          description: Day on which the meals are offered
+        meals:
+          type: array
+          description: Meals offered on this day
+          items:
+            $ref: '#/components/schemas/Meal'
+
+    Meal:
+      type: object
+      description: A meal offered by a restaurant on a specific day
+      required:
+        - id
+        - name
+        - category
+        - price
+        - originalLanguage
+        - static
+        - restaurant
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the meal on the specific day
+        name:
+          type: object
+          description: Localized name of the meal
+          propertyNames:
+            $ref: '#/components/schemas/LanguageEnum'
+          additionalProperties:
+            type: string
+          examples:
+            - de: Currywurst mit Pommes
+              en: Curry sausage with fries
+        category:
+          $ref: '#/components/schemas/MealCategory'
+        price:
+          $ref: '#/components/schemas/MealPrice'
+        allergens:
+          type: array
+          description: List of allergens (e.g. gluten, lactose, etc.)
+          items:
+            type: string
+        flags:
+          type: array
+          description: List of flags (e.g. vegan, vegetarian, etc.)
+          items:
+            type: string
+        nutrition:
+          $ref: '#/components/schemas/Nutrition'
+        originalLanguage:
+          $ref: '#/components/schemas/LanguageEnum'
+        static:
+          type: boolean
+          description: Static meals are always available, non-static meals are only available on specific days
+          examples: [ false ]
+        restaurant:
+          $ref: '#/components/schemas/Restaurant'
+        variations:
+          type: array
+          description: Variants or toppings of the meal, like bread, sauce, etc.
+          items:
+            $ref: '#/components/schemas/MealVariation'
+
+    MealVariation:
+      type: object
+      description: A variant or topping of a meal, like bread, sauce, etc.
+      required:
+        - id
+        - name
+        - additional
+        - price
+        - originalLanguage
+        - static
+        - restaurant
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the variant
+        name:
+          type: object
+          description: Localized name of the variant
+          propertyNames:
+            $ref: '#/components/schemas/LanguageEnum'
+          additionalProperties:
+            type: string
+          examples:
+            - de: Mit Sauce Hollandaise
+              en: With hollandaise sauce
+        additional:
+          type: boolean
+          description: Whether the variant is an extra topping rather than a core meal option
+          examples: [ true ]
+        price:
+          $ref: '#/components/schemas/MealPrice'
+        allergens:
+          type: array
+          description: List of allergens (e.g. gluten, lactose, etc.)
+          items:
+            type: string
+        flags:
+          type: array
+          description: List of flags (e.g. vegan, vegetarian, etc.)
+          items:
+            type: string
+        nutrition:
+          $ref: '#/components/schemas/Nutrition'
+        originalLanguage:
+          $ref: '#/components/schemas/LanguageEnum'
+        static:
+          type: boolean
+          description: Static variants are always available, non-static variants are only available on specific days
+          examples: [ false ]
+        restaurant:
+          $ref: '#/components/schemas/Restaurant'
+        parentMealId:
+          type: string
+          description: ID of the parent meal to which this variation belongs
+
+    MealPrice:
+      type: object
+      description: Prices for different types of customers
+      properties:
+        student:
+          type: number
+          format: float
+          description: Price for students
+          examples: [ 3.9 ]
+        employee:
+          type: number
+          format: float
+          description: Price for employees
+          examples: [ 4.9 ]
+        guest:
+          type: number
+          format: float
+          description: Price for guests
+          examples: [ 5.9 ]
+
+    MealCategory:
+      type: string
+      description: Category of the meal
+      enum:
+        - MAIN
+        - SOUP
+        - SALAD
+        - OTHER
+      examples: [ MAIN ]
+
+    Restaurant:
+      type: string
+      description: Restaurant where meals are offered
+      enum:
+        - INGOLSTADT_MENSA
+        - NEUBURG_MENSA
+        - REIMANNS
+        - CANISIUS
+      examples: [ INGOLSTADT_MENSA ]
+    
+    Nutrition:
+      type: object
+      description: Nutritional information about a meal
+      required:
+        - kj
+        - kcal
+        - fat
+        - fatSaturated
+        - carbs
+        - sugar
+        - fiber
+        - protein
+        - salt
+      properties:
+        kj:
+          type: number
+          format: double
+          description: Energy in kilojoules
+          examples: [ 1500 ]
+        kcal:
+          type: number
+          format: double
+          description: Energy in kilocalories
+          examples: [ 358 ]
+        fat:
+          type: number
+          format: double
+          description: Fat in grams
+          examples: [ 12.5 ]
+        fatSaturated:
+          type: number
+          format: double
+          description: Saturated fat in grams
+          examples: [ 4.2 ]
+        carbs:
+          type: number
+          format: double
+          description: Carbohydrates in grams
+          examples: [ 45.3 ]
+        sugar:
+          type: number
+          format: double
+          description: Sugar in grams
+          examples: [ 5.1 ]
+        fiber:
+          type: number
+          format: double
+          description: Fiber in grams
+          examples: [ 3.2 ]
+        protein:
+          type: number
+          format: double
+          description: Protein in grams
+          examples: [ 15.8 ]
+        salt:
+          type: number
+          format: double
+          description: Salt in grams
+          examples: [ 2.1 ]

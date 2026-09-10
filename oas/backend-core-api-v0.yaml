@@ -321,9 +321,9 @@ components:
       required: true
       description: Unique identifier of the sport.
       schema:
-        type: string
-        format: uuid
-      example: '08a16b83-9094-4e89-8c05-2ccadd5c1c7e'
+        type: integer
+        format: int64
+      example: 21
 
   responses:
     Problem:
@@ -696,10 +696,10 @@ components:
             - updatedAt
           properties:
             id:
-              type: string
-              format: uuid
+              type: integer
+              format: int64
               description: Unique identifier of the sport
-              examples: [ '08a16b83-9094-4e89-8c05-2ccadd5c1c7e' ]
+              examples: [ 21 ]
 
             createdAt:
               type: string
@@ -730,13 +730,12 @@ components:
             - { de: 'Basketball', en: 'Basketball' }
 
         description:
-          type: object
+          type: [ object, 'null' ]
           description: Localized description
           propertyNames:
             $ref: '#/components/schemas/LanguageEnum'
           additionalProperties:
             type: string
-            minLength: 1
           examples:
             - { de: 'Offenes Training, keine Anmeldung nötig.', en: 'Open training, no registration required.' }
 
@@ -764,7 +763,7 @@ components:
             - '18:00:00'
 
         endTime:
-          type: string
+          type: [ string, 'null' ]
           format: time
           description: Time when the sport ends
           examples:
@@ -790,10 +789,9 @@ components:
             - 'test@example.com'
 
         sportsCategory:
-          type: string
-          description: Free-text category the sport belongs to. Not a fixed enum
-          examples:
-            - 'Basketball'
+          $ref: '#/components/schemas/SportsCategoryEnum' 
+          description: Category the sport belongs to. Is a fixed enum
+          examples: [ BASKETBALL ]
 
     SportsCreateRequest:
       allOf:
@@ -801,12 +799,10 @@ components:
         - type: object
           required:
             - title
-            - description
             - campus
             - location
             - weekday
             - startTime
-            - endTime
             - requiresRegistration
             - sportsCategory
 
@@ -845,3 +841,21 @@ components:
         - FRIDAY
         - SATURDAY
         - SUNDAY
+
+    SportsCategoryEnum:
+      type: string
+      description: Category the sport belongs to
+      enum:
+        - BASKETBALL
+        - FOOTBALL
+        - CALISTHENICS
+        - VOLLEYBALL
+        - HANDBALL
+        - BOULDERING
+        - BADMINTON
+        - TENNIS
+        - SWIMMING
+        - MARTIAL_ARTS
+        - YOGA
+        - DANCING
+        - OTHER

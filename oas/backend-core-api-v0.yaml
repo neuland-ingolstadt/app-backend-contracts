@@ -3,6 +3,9 @@ openapi: 3.1.1
 info:
   title: Neuland Backend Core API
   version: 0.0.1
+  license:
+    name: GNU Affero General Public License v3.0
+    identifier: AGPL-3.0-only
 
 servers:
   - url: https://api.neuland.ing/v0

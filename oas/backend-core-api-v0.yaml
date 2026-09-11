@@ -846,26 +846,20 @@ components:
     SportsWrite:
       type: object
       properties:
-        title:
+        contents:
           type: object
-          description: Localized title
+          description: Localized sports content
           propertyNames:
             $ref: '#/components/schemas/LanguageEnum'
           additionalProperties:
-            type: string
-            minLength: 1
+            $ref: '#/components/schemas/SportsContent'
           examples:
-            - { de: 'Basketball', en: 'Basketball' }
-
-        description:
-          type: [ object, 'null' ]
-          description: Localized description
-          propertyNames:
-            $ref: '#/components/schemas/LanguageEnum'
-          additionalProperties:
-            type: string
-          examples:
-            - { de: 'Offenes Training, keine Anmeldung nötig.', en: 'Open training, no registration required.' }
+            - de:
+                title: Basketball
+                description: Offenes Training, keine Anmeldung nötig.
+              en:
+                title: Basketball
+                description: Open training, no registration required.
 
         campus:
           description: Campus at which the sport is being held
@@ -926,7 +920,7 @@ components:
         - $ref: '#/components/schemas/SportsWrite'
         - type: object
           required:
-            - title
+            - contents
             - campus
             - location
             - weekday
@@ -939,6 +933,23 @@ components:
         - $ref: '#/components/schemas/SportsWrite'
         - type: object
           minProperties: 1
+
+    SportsContent:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Localized title
+          examples:
+            - Basketball
+        description:
+          type: [ string, 'null' ]
+          description: Localized description
+          examples:
+            - Offenes Training, keine Anmeldung nötig.
 
     SportsListResponse:
       type: object

@@ -26,6 +26,7 @@ tags:
 paths:
   /announcements:
     get:
+      operationId: listAnnouncements
       tags: [ announcements ]
       summary: Get all announcements
       parameters:
@@ -41,6 +42,7 @@ paths:
           $ref: '#/components/responses/Problem'
 
     post:
+      operationId: createAnnouncement
       tags: [ announcements ]
       summary: Create an announcement
       security:
@@ -68,6 +70,7 @@ paths:
       - $ref: '#/components/parameters/AnnouncementId'
 
     get:
+      operationId: getAnnouncement
       tags: [ announcements ]
       summary: Get an announcement by ID
       responses:
@@ -83,6 +86,7 @@ paths:
           $ref: '#/components/responses/Problem'
 
     patch:
+      operationId: updateAnnouncement
       tags: [ announcements ]
       summary: Update an announcement
       security:
@@ -108,6 +112,7 @@ paths:
           $ref: '#/components/responses/Problem'
 
     delete:
+      operationId: deleteAnnouncement
       tags: [ announcements ]
       summary: Delete an announcement
       security:
@@ -123,6 +128,7 @@ paths:
           $ref: '#/components/responses/Problem'
   /room-reports: 
     post:
+      operationId: createRoomReport
       tags: [ roomReports ]
       summary: Create a new room report
       security: [ ]
@@ -143,6 +149,7 @@ paths:
           $ref: '#/components/responses/Problem'
 
     get:
+      operationId: listRoomReports
       tags: [ roomReports ]
       summary: Get all room reports
       description: Contains user reports of wrong room data. Only available for admin users
@@ -162,6 +169,7 @@ paths:
 
   /room-reports/{roomReportId}: 
     patch:
+      operationId: resolveRoomReport
       tags: [ roomReports ]
       summary: Resolve a room report
       description: Marks the specified room report as resolved. Only available for admin users
@@ -190,6 +198,7 @@ paths:
           $ref: '#/components/responses/Problem'
   /university-sports:
     get:
+      operationId: listSports
       tags: [ universitySports ]
       summary: Get all sports
       security: [ ]
@@ -204,6 +213,7 @@ paths:
           $ref: '#/components/responses/Problem'
 
     post:
+      operationId: createSport
       tags: [ universitySports ]
       summary: Create a sport
       security:
@@ -228,6 +238,7 @@ paths:
 
   /audit-logs:
     get:
+      operationId: listAuditLogs
       tags: [ auditLogs ]
       summary: Get audit logs
       description: Contains all audit log entries. Only available for admin users
@@ -253,6 +264,7 @@ paths:
       - $ref: '#/components/parameters/SportsId'
 
     get:
+      operationId: getSport
       tags: [ universitySports ]
       summary: Get a sport by ID
       security: [ ]
@@ -269,6 +281,7 @@ paths:
           $ref: '#/components/responses/Problem'
 
     patch:
+      operationId: updateSport
       tags: [ universitySports ]
       summary: Update a sport
       security:
@@ -294,6 +307,7 @@ paths:
           $ref: '#/components/responses/Problem'
 
     delete:
+      operationId: deleteSport
       tags: [ universitySports ]
       summary: Delete a sport
       security:
@@ -310,6 +324,7 @@ paths:
 
   /food/meals:
     get:
+      operationId: listMeals
       tags: [ food ]
       summary: Get meals
       description: Retrieve meals offered by restaurants within a specified date range
@@ -335,6 +350,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/MealId'
     get:
+      operationId: getMeal
       tags: [ food ]
       summary: Get a meal by ID
       description: Retrieve a specific meal by its unique identifier
@@ -888,14 +904,14 @@ components:
           format: time
           description: Time when the sport starts
           examples:
-            - '18:00:00'
+            - '18:00:00Z'
 
         endTime:
           type: [ string, 'null' ]
           format: time
           description: Time when the sport ends
           examples:
-            - '19:30:00'
+            - '19:30:00Z'
 
         requiresRegistration:
           type: boolean
@@ -909,7 +925,7 @@ components:
           examples:
             - 'https://chat.example.com/invite/abc123'
 
-        eMail:
+        email:
           type: [ string, 'null' ]
           format: idn-email
           description: Optional contact email for the sport

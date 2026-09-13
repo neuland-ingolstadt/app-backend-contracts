@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>app.neuland</groupId>
+  <artifactId>app-backend-contracts</artifactId>
+  <version>${revision}</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <revision>0.0.0-SNAPSHOT</revision>
+    <maven.compiler.release>25</maven.compiler.release>
+    <openapi-generator.version>7.25.0</openapi-generator.version>
+  </properties>
+
+  <modules>
+    <module>backend-core-api-v0</module>
+  </modules>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/neuland-ingolstadt/app-backend-contracts</url>
+    </repository>
+  </distributionManagement>
+</project>

@@ -1,0 +1,16 @@
+{
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "mvn --batch-mode --no-transfer-progress deploy -Drevision=${nextRelease.version}"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}

@@ -32,16 +32,16 @@ dependency:
 
 ```xml
 <repositories>
-	<repository>
-		<id>github</id>
-		<url>https://maven.pkg.github.com/neuland-ingolstadt/app-backend-contracts</url>
-	</repository>
+  <repository>
+    <id>github</id>
+    <url>https://maven.pkg.github.com/neuland-ingolstadt/app-backend-contracts</url>
+  </repository>
 </repositories>
 
 <dependency>
-	<groupId>app.neuland</groupId>
-	<artifactId>backend-core-api-v0</artifactId>
-	<version>VERSION</version>
+  <groupId>app.neuland</groupId>
+  <artifactId>backend-core-api-v0</artifactId>
+  <version>VERSION</version>
 </dependency>
 ```
 

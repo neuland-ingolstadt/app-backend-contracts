@@ -6,7 +6,11 @@ on:
       - 'oas/**/*.yaml'
       - 'pom.xml'
       - '**/pom.xml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.releaserc.json'
       - '.github/workflows/validate-openapi.yaml'
+      - '.github/workflows/release-contracts.yaml'
 
 jobs:
   openapi:

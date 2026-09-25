@@ -495,7 +495,6 @@ components:
         - type: object
           required:
             - id
-            - createdAt
             - updatedAt
           properties:
             id:
@@ -504,13 +503,6 @@ components:
               minimum: 1
               description: Unique identifier of the announcement
               examples: [ 67 ]
-
-            createdAt:
-              type: string
-              format: date-time
-              description: Date and time when the announcement was created
-              examples:
-                - '2022-03-06T08:23:45Z'
 
             updatedAt:
               type: string
@@ -775,7 +767,6 @@ components:
         - id
         - room
         - reason
-        - createdAt
       properties:
         id:
           type: integer
@@ -799,13 +790,8 @@ components:
         description:
           type: [ string, 'null' ]
           description: Description of the report
-          examples: 
+          examples:
             - This room cannot be found here
-
-        createdAt:
-          type: string
-          format: date-time
-          description: Creation date (date and time) of the report
 
         resolvedAt:
           type: [ string, 'null' ]
@@ -847,7 +833,6 @@ components:
         - type: object
           required:
             - id
-            - createdAt
             - updatedAt
           properties:
             id:
@@ -855,13 +840,6 @@ components:
               format: int64
               description: Unique identifier of the sport
               examples: [ 21 ]
-
-            createdAt:
-              type: string
-              format: date-time
-              description: Date and time when the sport was created
-              examples:
-                - '2022-03-06T08:23:45Z'
 
             updatedAt:
               type: string

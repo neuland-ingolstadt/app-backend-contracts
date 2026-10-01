@@ -21,7 +21,8 @@ Contract-first API specifications shared by:
 Each OpenAPI specification is generated as a separate Maven library containing
 Jakarta REST server interfaces and DTOs. The libraries are published to GitHub
 Packages whenever a Conventional Commit merged into `main` produces a semantic
-release.
+release (`feat`, `fix`, or breaking changes). Commits such as `chore` or `docs`
+do not publish a new artifact version.
 
 | OpenAPI specification | Maven coordinates |
 | --- | --- |

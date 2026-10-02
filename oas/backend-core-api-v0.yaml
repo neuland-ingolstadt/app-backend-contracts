@@ -495,7 +495,6 @@ components:
         - type: object
           required:
             - id
-            - updatedAt
           properties:
             id:
               type: integer
@@ -503,13 +502,6 @@ components:
               minimum: 1
               description: Unique identifier of the announcement
               examples: [ 67 ]
-
-            updatedAt:
-              type: string
-              format: date-time
-              description: Date and time when the announcement was last updated
-              examples:
-                - '2022-03-06T08:23:45Z'
 
     AnnouncementWrite:
       type: object
@@ -833,20 +825,12 @@ components:
         - type: object
           required:
             - id
-            - updatedAt
           properties:
             id:
               type: integer
               format: int64
               description: Unique identifier of the sport
               examples: [ 21 ]
-
-            updatedAt:
-              type: string
-              format: date-time
-              description: Date and time when the sport was last updated
-              examples:
-                - '2022-03-06T08:23:45Z'
 
     SportsWrite:
       type: object

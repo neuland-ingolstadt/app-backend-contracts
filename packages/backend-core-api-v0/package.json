@@ -13,6 +13,7 @@
     "url": "https://github.com/neuland-ingolstadt/app-backend-contracts/issues"
   },
   "type": "module",
+  "sideEffects": false,
   "main": "./index.js",
   "types": "./schema.d.ts",
   "exports": {

@@ -15,6 +15,13 @@
   <description>Generated server interfaces and models for the Neuland Backend Core API v0.</description>
 
   <dependencies>
+    <!-- Typed RestResponse so Quarkus native can register Jackson models at build time -->
+    <dependency>
+      <groupId>io.quarkus.resteasy.reactive</groupId>
+      <artifactId>resteasy-reactive-common</artifactId>
+      <version>3.40.1</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>jakarta.ws.rs</groupId>
       <artifactId>jakarta.ws.rs-api</artifactId>
@@ -81,21 +88,24 @@
             <configuration>
               <inputSpec>${project.basedir}/../oas/backend-core-api-v0.yaml</inputSpec>
               <generatorName>jaxrs-spec</generatorName>
+              <library>quarkus</library>
               <apiPackage>app.neuland.backend.core.api.v0</apiPackage>
               <modelPackage>app.neuland.backend.core.api.v0.model</modelPackage>
               <generateSupportingFiles>false</generateSupportingFiles>
               <configOptions>
                 <interfaceOnly>true</interfaceOnly>
-                <returnResponse>true</returnResponse>
+                <!--
+                  Prefer Quarkus RestResponse<T> over untyped JAX-RS Response so native
+                  builds can infer entity types for Jackson (no RegisterForReflection).
+                -->
+                <returnJBossResponse>true</returnJBossResponse>
                 <useJakartaEe>true</useJakartaEe>
                 <useTags>true</useTags>
                 <openApiNullable>false</openApiNullable>
                 <dateLibrary>java8</dateLibrary>
                 <!--
-                  Default jaxrs-spec emits @JsonCreator with required properties only; optional
-                  fields are setters. Quarkus native then drops those getters from JSON responses
-                  (endTime, invitationLink, email, url, …) even when Hibernate loaded them.
-                  Disable the required-only creator so all properties serialize equally.
+                  Keep Bean Validation as the source of truth for required fields instead of
+                  Jackson @JsonCreator required-only constructors (openapi-generator#20569).
                 -->
                 <generateJsonCreator>false</generateJsonCreator>
               </configOptions>

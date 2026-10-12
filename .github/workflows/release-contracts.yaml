@@ -11,6 +11,8 @@ permissions:
   issues: write
   packages: write
   pull-requests: write
+  # Required for npm Trusted Publishing (OIDC) — no NPM_TOKEN
+  id-token: write
 
 jobs:
   release:
@@ -18,7 +20,8 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_ACTOR: ${{ github.actor }}
-      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Do NOT set NODE_AUTH_TOKEN / NPM_TOKEN — that forces token auth and
+      # prevents npm Trusted Publishing (OIDC) from engaging.
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -29,8 +32,11 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          registry-url: https://npm.pkg.github.com
+          registry-url: https://registry.npmjs.org
           scope: '@neuland-ingolstadt'
+
+      # Trusted Publishing needs npm CLI ≥ 11.5.1
+      - run: npm install -g npm@latest
 
       - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:

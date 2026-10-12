@@ -1,9 +1,12 @@
 name: Publish npm package for existing tag
 
-# Catch-up: publish @neuland-ingolstadt/backend-core-api-v0 for a Git tag that
-# already released Maven before npm packaging existed (e.g. 1.0.4).
-# Uses packaging scripts from the workflow ref (usually main) and the OpenAPI
-# document from the requested tag.
+# Catch-up / bootstrap: publish @neuland-ingolstadt/backend-core-api-v0 for a
+# Git tag that already released Maven (e.g. 1.0.4).
+#
+# Preferred path after Trusted Publishing is configured: OIDC (no token).
+# For the very first npmjs publish only, npm requires the package to exist
+# before OIDC can be configured — publish once locally with `npm login`
+# instead of storing NPM_TOKEN (see package README / team docs).
 on:
   workflow_dispatch:
     inputs:
@@ -15,13 +18,11 @@ on:
 
 permissions:
   contents: write
-  packages: write
+  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout packaging (workflow ref)
@@ -36,17 +37,18 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          registry-url: https://npm.pkg.github.com
+          registry-url: https://registry.npmjs.org
           scope: '@neuland-ingolstadt'
 
+      - run: npm install -g npm@latest
       - run: npm ci
       - run: npm run build:npm
 
-      - name: Set version, publish, and attach release tarball
+      - name: Set version, publish (OIDC), and attach release tarball
         working-directory: packages/backend-core-api-v0
         run: |
           npm version "${{ inputs.version }}" --no-git-tag-version
-          npm publish
+          npm publish --access public
           npm pack
           gh release upload "v${{ inputs.version }}" \
             "neuland-ingolstadt-backend-core-api-v0-${{ inputs.version }}.tgz" \

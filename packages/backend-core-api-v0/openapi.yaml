@@ -1,0 +1,1395 @@
+openapi: 3.1.1
+
+info:
+  title: Neuland Backend Core API
+  version: 1.0.4
+  license:
+    name: GNU Affero General Public License v3.0
+    identifier: AGPL-3.0-or-later
+
+servers:
+  - url: https://core.api.neuland.app
+    description: The backend
+
+security:
+  - bearerAuth: [ ]
+
+tags:
+  - name: announcements
+    description: Everything about announcements
+  - name: roomReports
+    description: Creating, viewing and resolving room reports
+  - name: universitySports
+    description: University sports offerings (schedules, campuses, categories)
+  - name: auditLogs
+    description: Get the audit log entries
+  - name: food
+    description: Everything about the food offering of mensas and restaurants
+
+paths:
+  /announcements:
+    get:
+      operationId: listAnnouncements
+      tags: [ announcements ]
+      summary: Get all announcements
+      description: Public endpoint, no authentication required
+      security: [ ]
+      parameters:
+        - $ref: '#/components/parameters/IncludeInactiveQueryParam'
+      responses:
+        '200':
+          description: Announcements
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouncementListResponse'
+        '400':
+          description: Bad request
+        default:
+          $ref: '#/components/responses/Problem'
+
+    post:
+      operationId: createAnnouncement
+      tags: [ announcements ]
+      summary: Create an announcement
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementCreateRequest'
+      responses:
+        '201':
+          description: Announcement created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '401':
+          description: Unauthorized
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /announcements/{announcementId}:
+    parameters:
+      - $ref: '#/components/parameters/AnnouncementId'
+
+    get:
+      operationId: getAnnouncement
+      tags: [ announcements ]
+      summary: Get an announcement by ID
+      description: Public endpoint, no authentication required
+      security: [ ]
+      responses:
+        '200':
+          description: Announcement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '404':
+          description: Announcement not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+    patch:
+      operationId: updateAnnouncement
+      tags: [ announcements ]
+      summary: Update an announcement
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementPatchRequest'
+      responses:
+        '200':
+          description: Announcement updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Announcement not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+    delete:
+      operationId: deleteAnnouncement
+      tags: [ announcements ]
+      summary: Delete an announcement
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: Announcement deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Announcement not found
+        default:
+          $ref: '#/components/responses/Problem'
+  /room-reports:
+    post:
+      operationId: createRoomReport
+      tags: [ roomReports ]
+      summary: Create a new room report
+      description: Public endpoint, no authentication required
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoomReportRequest'
+      responses:
+        '201':
+          description: Room report created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomReportResponse'
+        '400':
+          description: Bad request
+        default:
+          $ref: '#/components/responses/Problem'
+
+    get:
+      operationId: listRoomReports
+      tags: [ roomReports ]
+      summary: Get all room reports
+      description: Contains user reports of wrong room data. Only available for admin users
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Room reports retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomReportListResponse'
+        '401':
+          description: Unauthorized
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /room-reports/{roomReportId}:
+    patch:
+      operationId: resolveRoomReport
+      tags: [ roomReports ]
+      summary: Resolve a room report
+      description: Marks the specified room report as resolved. Only available for admin users
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/RoomReportId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomReportPatchRequest'
+      responses:
+        '200':
+          description: Room report resolved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomReportResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Room report not found
+        default:
+          $ref: '#/components/responses/Problem'
+  /university-sports:
+    get:
+      operationId: listSports
+      tags: [ universitySports ]
+      summary: Get all sports
+      description: Public endpoint, no authentication required. Every sport includes schedule fields (campus, weekday, startTime, etc.).
+      security: [ ]
+      responses:
+        '200':
+          description: All university sports with schedule and localization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SportsListResponse'
+        '400':
+          description: Bad request
+        default:
+          $ref: '#/components/responses/Problem'
+
+    post:
+      operationId: createSport
+      tags: [ universitySports ]
+      summary: Create a sport
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsCreateRequest'
+      responses:
+        '201':
+          description: Sport created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sports'
+        '401':
+          description: Unauthorized
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /audit-logs:
+    get:
+      operationId: listAuditLogs
+      tags: [ auditLogs ]
+      summary: Get audit logs
+      description: Contains all audit log entries. Only available for admin users
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/AuditLogLimit'
+        - $ref: '#/components/parameters/AuditLogCursor'
+      responses:
+        '200':
+          description: Audit logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogListResponse'
+        '401':
+          description: Unauthorized
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /university-sports/{sportsId}:
+    parameters:
+      - $ref: '#/components/parameters/SportsId'
+
+    get:
+      operationId: getSport
+      tags: [ universitySports ]
+      summary: Get a sport by ID
+      security: [ ]
+      responses:
+        '200':
+          description: Sport
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sports'
+        '404':
+          description: Sport not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+    patch:
+      operationId: updateSport
+      tags: [ universitySports ]
+      summary: Update a sport
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SportsPatchRequest'
+      responses:
+        '200':
+          description: Sport updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sports'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Sport not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+    delete:
+      operationId: deleteSport
+      tags: [ universitySports ]
+      summary: Delete a sport
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: Sport deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Sport not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /food/meals:
+    get:
+      operationId: listMeals
+      tags: [ food ]
+      summary: Get meals
+      description: Retrieve meals offered by restaurants within a specified date range
+      security: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Restaurants'
+        - $ref: '#/components/parameters/MealDateFrom'
+        - $ref: '#/components/parameters/MealDateTo'
+      responses:
+        '200':
+          description: Meals retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Days within the requested range that have at least one meal. Days without meals are omitted.
+                items:
+                  $ref: '#/components/schemas/MealDay'
+        '400':
+          description: Bad request
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /food/meals/{mealId}:
+    parameters:
+      - $ref: '#/components/parameters/MealId'
+    get:
+      operationId: getMeal
+      tags: [ food ]
+      summary: Get a meal by ID
+      description: Retrieve a specific meal by its unique identifier
+      security: [ ]
+      responses:
+        '200':
+          description: Meal retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meal'
+        '404':
+          description: Meal not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    AnnouncementId:
+      name: announcementId
+      in: path
+      required: true
+      description: Unique identifier of the announcement
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+      example: 67
+    IncludeInactiveQueryParam:
+      name: includeInactive
+      in: query
+      description: Whether inactive announcements should be included or not
+      schema:
+        type: boolean
+    RoomReportId:
+      name: roomReportId
+      in: path
+      required: true
+      description: ID of the room report to resolve
+      schema:
+        type: integer
+        format: int64
+      example: 77
+    SportsId:
+      name: sportsId
+      in: path
+      required: true
+      description: Unique identifier of the sport
+      schema:
+        type: integer
+        format: int64
+      example: 21
+    AuditLogLimit:
+      name: limit
+      in: query
+      description: Maximum number of audit log entries to return
+      required: false
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+      example: 50
+    AuditLogCursor:
+      name: cursor
+      in: query
+      description: Cursor indicating where to continue retrieving audit log entries
+      required: false
+      schema:
+        type: string
+      example: eyJpZCI6MTAwfQ
+
+    Restaurants:
+      name: restaurants
+      in: query
+      required: true
+      description: Restaurant(s) for which to retrieve meals
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/Restaurant'
+        minItems: 1
+        uniqueItems: true
+      example: [ INGOLSTADT_MENSA, REIMANNS ]
+
+    MealDateFrom:
+      name: mealDateFrom
+      in: query
+      required: true
+      description: Start date for which to retrieve meals (inclusive)
+      schema:
+        type: string
+        format: date
+
+    MealDateTo:
+      name: mealDateTo
+      in: query
+      required: true
+      description: End date for which to retrieve meals (inclusive)
+      schema:
+        type: string
+        format: date
+
+    MealId:
+      name: mealId
+      in: path
+      required: true
+      description: Unique identifier of the meal on the specific day
+      schema:
+        type: string
+
+  responses:
+    Problem:
+      description: An error occurred
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+
+  schemas:
+    Announcement:
+      allOf:
+        - $ref: '#/components/schemas/AnnouncementWrite'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+              minimum: 1
+              description: Unique identifier of the announcement
+              examples: [ 67 ]
+
+    AnnouncementWrite:
+      type: object
+      required:
+        - platforms
+        - userKinds
+        - contents
+        - startDateTime
+        - endDateTime
+        - priority
+      properties:
+        platforms:
+          type: array
+          description: Platforms on which the announcement is displayed
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/PlatformEnum'
+          examples:
+            - [ ANDROID, IOS ]
+
+        userKinds:
+          type: array
+          description: User groups targeted by the announcement
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/UserKindEnum'
+          examples:
+            - [ STUDENT, EMPLOYEE ]
+
+        contents:
+          $ref: '#/components/schemas/AnnouncementContents'
+
+        startDateTime:
+          type: string
+          format: date-time
+          description: Date and time when the announcement starts being displayed
+          examples:
+            - '2022-03-06T08:23:45Z'
+
+        endDateTime:
+          type: string
+          format: date-time
+          description: Date and time when the announcement stops being displayed
+          examples:
+            - '2022-03-07T08:23:45Z'
+
+        priority:
+          type: integer
+          description: Priority of the announcement. Higher values are more important.
+          examples: [ 69 ]
+
+        url:
+          type: [ string, 'null' ]
+          format: uri
+          description: Optional URL associated with the announcement
+          examples:
+            - 'https://website.com'
+
+        imageUrl:
+          type: [ string, 'null' ]
+          format: uri
+          description: Optional image URL for the announcement
+          examples:
+            - 'https://website.com/image.png'
+
+    AnnouncementCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/AnnouncementWrite'
+
+    AnnouncementPatchRequest:
+      type: object
+      minProperties: 1
+      properties:
+        platforms:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/PlatformEnum'
+
+        userKinds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/UserKindEnum'
+
+        contents:
+          $ref: '#/components/schemas/AnnouncementContents'
+
+        startDateTime:
+          type: string
+          format: date-time
+
+        endDateTime:
+          type: string
+          format: date-time
+
+        priority:
+          type: integer
+
+        url:
+          type: [ string, 'null' ]
+          format: uri
+
+        imageUrl:
+          type: [ string, 'null' ]
+          format: uri
+
+    AnnouncementContent:
+      type: object
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Localized title
+          examples:
+            - Important information
+        description:
+          type: string
+          minLength: 1
+          description: Localized description
+          examples:
+            - This is an important information.
+
+    AnnouncementListResponse:
+      type: object
+      required:
+        - announcements
+      properties:
+        announcements:
+          type: array
+          description: All currently active announcements
+          items:
+            $ref: '#/components/schemas/Announcement'
+
+    AnnouncementContents:
+      type: object
+      description: Localized announcement content. Both German and English are required.
+      required:
+        - de
+        - en
+      properties:
+        de:
+          $ref: '#/components/schemas/AnnouncementContent'
+        en:
+          $ref: '#/components/schemas/AnnouncementContent'
+      additionalProperties: false
+
+    SportsContents:
+      type: object
+      description: Localized sports content. Both German and English are required.
+      required:
+        - de
+        - en
+      properties:
+        de:
+          $ref: '#/components/schemas/SportsContent'
+        en:
+          $ref: '#/components/schemas/SportsContent'
+      additionalProperties: false
+      examples:
+        - de:
+            title: Basketball
+            description: Offenes Training, keine Anmeldung nötig.
+          en:
+            title: Basketball
+            description: Open training, no registration required.
+
+    LocalizedString:
+      type: object
+      description: Localized text in German and English
+      required:
+        - de
+        - en
+      properties:
+        de:
+          type: string
+          minLength: 1
+          description: German text
+        en:
+          type: string
+          minLength: 1
+          description: English text
+      additionalProperties: false
+      examples:
+        - de: Currywurst mit Pommes
+          en: Curry sausage with fries
+
+    PlatformEnum:
+      type: string
+      description: Platform on which the announcement is displayed
+      enum:
+        - ANDROID
+        - IOS
+        - WEB
+        - WEB_DEV
+
+    UserKindEnum:
+      type: string
+      description: User group targeted by the announcement
+      enum:
+        - STUDENT
+        - EMPLOYEE
+        - GUEST
+
+    LanguageEnum:
+      type: string
+      description: Supported language
+      enum:
+        - de
+        - en
+
+    Problem:
+      type: object
+      description: Problem Details response as defined by RFC 9457
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          default: about:blank
+          description: URI reference identifying the problem type
+
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type
+
+        status:
+          type: integer
+          format: int32
+          minimum: 100
+          maximum: 599
+          description: HTTP status code generated by the origin server
+          examples: [ 503 ]
+
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+          examples:
+            - Connection to database timed out
+
+        instance:
+          type: string
+          format: uri-reference
+          description: URI reference identifying the specific occurrence of the problem
+
+    CreateRoomReportRequest:
+      type: object
+      description: Input data required to create a new report about incorrect room data
+      required:
+        - reason
+        - room
+      properties:
+        reason:
+          $ref: '#/components/schemas/RoomReportCategoryEnum'
+          description: Reason for the report
+          examples:
+            - WRONG_DESCRIPTION
+            - WRONG_LOCATION
+
+        description:
+          type: [ string, 'null' ]
+          description: Description of the report
+          examples:
+            - This room cannot be found here
+
+        room:
+          type: string
+          description: Room name
+          examples:
+            - G201
+
+    RoomReportResponse:
+      type: object
+      description: Response returned after creating and resolving a room report
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Unique identifier of the room report
+          examples: [ 77 ]
+
+    RoomReport:
+      type: object
+      description: A user report of wrong room data
+      required:
+        - id
+        - room
+        - reason
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the room report
+          examples: [ 77 ]
+
+        room:
+          type: string
+          description: Room name
+          examples:
+            - G201
+
+        reason:
+          $ref: '#/components/schemas/RoomReportCategoryEnum'
+          description: Reason for the report
+          examples:
+            - WRONG_DESCRIPTION
+            - WRONG_LOCATION
+
+        description:
+          type: [ string, 'null' ]
+          description: Description of the report
+          examples:
+            - This room cannot be found here
+
+        resolvedAt:
+          type: [ string, 'null' ]
+          format: date-time
+          description: Resolved date of the report or null if not resolved
+
+    RoomReportListResponse:
+      type: object
+      required:
+        - roomReports
+      properties:
+        roomReports:
+          type: array
+          description: All room reports
+          items:
+            $ref: '#/components/schemas/RoomReport'
+
+    RoomReportPatchRequest:
+      type: object
+      required:
+        - resolved
+      properties:
+        resolved:
+          type: boolean
+
+    RoomReportCategoryEnum:
+      type: string
+      description: Reason for the room report
+      enum:
+        - WRONG_DESCRIPTION
+        - WRONG_LOCATION
+        - NOT_EXISTING
+        - MISSING
+        - OTHER
+
+    Sports:
+      type: object
+      description: A university sports offering with schedule and localization
+      required:
+        - id
+        - contents
+        - campus
+        - location
+        - weekday
+        - startTime
+        - requiresRegistration
+        - sportsCategory
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the sport
+          examples: [ 21 ]
+        contents:
+          $ref: '#/components/schemas/SportsContents'
+        campus:
+          description: Campus at which the sport is being held
+          $ref: '#/components/schemas/CampusEnum'
+          examples: [ INGOLSTADT ]
+        location:
+          type: string
+          minLength: 1
+          description: The place where the sport is being held
+          examples:
+            - 'Sporthalle 1'
+        weekday:
+          description: The day on which the sport takes place
+          $ref: '#/components/schemas/WeekdayEnum'
+          examples: [ MONDAY ]
+        startTime:
+          type: string
+          format: time
+          description: Time when the sport starts (ISO-8601 time, typically with UTC offset, e.g. 18:00:00Z)
+          examples:
+            - '18:00:00Z'
+        endTime:
+          type: [ string, 'null' ]
+          format: time
+          description: Time when the sport ends
+          examples:
+            - '19:30:00Z'
+        requiresRegistration:
+          type: boolean
+          description: Whether the sport requires registration
+          examples: [ true ]
+        invitationLink:
+          type: [ string, 'null' ]
+          format: uri
+          description: Optional invitation link associated with the sport
+          examples:
+            - 'https://chat.example.com/invite/abc123'
+        email:
+          type: [ string, 'null' ]
+          format: idn-email
+          description: Optional contact email for the sport
+          examples:
+            - 'test@example.com'
+        sportsCategory:
+          $ref: '#/components/schemas/SportsCategoryEnum'
+          description: Category the sport belongs to. Is a fixed enum
+          examples: [ BASKETBALL ]
+
+    SportsWrite:
+      type: object
+      properties:
+        contents:
+          $ref: '#/components/schemas/SportsContents'
+
+        campus:
+          description: Campus at which the sport is being held
+          $ref: '#/components/schemas/CampusEnum'
+          examples: [ INGOLSTADT ]
+
+        location:
+          type: string
+          minLength: 1
+          description: The place where the sport is being held
+          examples:
+            - 'Sporthalle 1'
+
+        weekday:
+          description: The day on which the sport takes place
+          $ref: '#/components/schemas/WeekdayEnum'
+          examples: [ MONDAY ]
+
+        startTime:
+          type: string
+          format: time
+          description: Time when the sport starts (ISO-8601 time, typically with UTC offset, e.g. 18:00:00Z)
+          examples:
+            - '18:00:00Z'
+
+        endTime:
+          type: [ string, 'null' ]
+          format: time
+          description: Time when the sport ends
+          examples:
+            - '19:30:00Z'
+
+        requiresRegistration:
+          type: boolean
+          description: Whether the sport requires registration
+          examples: [ true ]
+
+        invitationLink:
+          type: [ string, 'null' ]
+          format: uri
+          description: Optional invitation link associated with the sport
+          examples:
+            - 'https://chat.example.com/invite/abc123'
+
+        email:
+          type: [ string, 'null' ]
+          format: idn-email
+          description: Optional contact email for the sport
+          examples:
+            - 'test@example.com'
+
+        sportsCategory:
+          $ref: '#/components/schemas/SportsCategoryEnum'
+          description: Category the sport belongs to. Is a fixed enum
+          examples: [ BASKETBALL ]
+
+    SportsCreateRequest:
+      type: object
+      description: Payload to create a university sports offering
+      required:
+        - contents
+        - campus
+        - location
+        - weekday
+        - startTime
+        - requiresRegistration
+        - sportsCategory
+      properties:
+        contents:
+          $ref: '#/components/schemas/SportsContents'
+        campus:
+          $ref: '#/components/schemas/CampusEnum'
+        location:
+          type: string
+          minLength: 1
+        weekday:
+          $ref: '#/components/schemas/WeekdayEnum'
+        startTime:
+          type: string
+          format: time
+        endTime:
+          type: [ string, 'null' ]
+          format: time
+        requiresRegistration:
+          type: boolean
+        invitationLink:
+          type: [ string, 'null' ]
+          format: uri
+        email:
+          type: [ string, 'null' ]
+          format: idn-email
+        sportsCategory:
+          $ref: '#/components/schemas/SportsCategoryEnum'
+
+    SportsPatchRequest:
+      allOf:
+        - $ref: '#/components/schemas/SportsWrite'
+        - type: object
+          minProperties: 1
+
+    SportsContent:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Localized title
+          examples:
+            - Basketball
+        description:
+          type: [ string, 'null' ]
+          description: Localized description
+          examples:
+            - Offenes Training, keine Anmeldung nötig.
+
+    SportsListResponse:
+      type: object
+      required:
+        - sports
+      properties:
+        sports:
+          type: array
+          description: All currently active sports
+          items:
+            $ref: '#/components/schemas/Sports'
+
+    CampusEnum:
+      type: string
+      description: The campus at which the sport is being held
+      enum:
+        - INGOLSTADT
+        - NEUBURG
+
+    WeekdayEnum:
+      type: string
+      description: Possible weekdays
+      enum:
+        - MONDAY
+        - TUESDAY
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+        - SUNDAY
+
+    SportsCategoryEnum:
+      type: string
+      description: Category the sport belongs to
+      enum:
+        - BASKETBALL
+        - FOOTBALL
+        - CALISTHENICS
+        - VOLLEYBALL
+        - HANDBALL
+        - BOULDERING
+        - BADMINTON
+        - TENNIS
+        - SWIMMING
+        - MARTIAL_ARTS
+        - YOGA
+        - DANCING
+        - OTHER
+
+    AuditLogListResponse:
+      type: object
+      required:
+        - auditLogs
+      properties:
+        auditLogs:
+          type: array
+          description: All audit log entries
+          items:
+            $ref: '#/components/schemas/AuditLogEntry'
+        nextCursor:
+          type: [ string, 'null' ]
+          description: Cursor to use to retrieve the next page of audit log entries
+          examples:
+            - eyJpZCI6MTAwfQ
+
+    AuditLogEntry:
+      type: object
+      required:
+        - id
+        - entity
+        - operation
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Unique identifier of the audit log entry
+          examples: [ 77 ]
+
+        entity:
+          type: string
+          description: Entity of the audit log entry
+          examples:
+            - RoomReport
+            - Announcement
+
+        entityId:
+          type: [ integer, 'null' ]
+          format: int64
+          description: Entity ID of the audit log entry
+          examples: [ 77 ]
+
+        operation:
+          $ref: '#/components/schemas/AuditLogOperationEnum'
+
+        name:
+          type: [ string, 'null' ]
+          description: Name of the user who made the mutation
+          examples:
+            - Max Mustermann
+
+        userId:
+          type: [ string, 'null' ]
+          description: User ID of the user who made the mutation
+          examples:
+            - user-123
+
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation date and time of the audit log entry
+          examples:
+            - '2022-03-06T08:23:45.000Z'
+
+    AuditLogOperationEnum:
+      type: string
+      description: Operation of the audit log entry
+      enum:
+        - CREATE
+        - UPDATE
+        - DELETE
+
+    MealDay:
+      type: object
+      description: Meals offered on a specific day, across all requested restaurants
+      required:
+        - date
+        - meals
+      properties:
+        date:
+          type: string
+          format: date
+          description: Day on which the meals are offered
+        meals:
+          type: array
+          description: Meals offered on this day
+          items:
+            $ref: '#/components/schemas/Meal'
+
+    Meal:
+      type: object
+      description: A meal offered by a restaurant on a specific day
+      required:
+        - id
+        - name
+        - category
+        - price
+        - originalLanguage
+        - static
+        - restaurant
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the meal on the specific day
+        name:
+          $ref: '#/components/schemas/LocalizedString'
+        category:
+          $ref: '#/components/schemas/MealCategory'
+        price:
+          $ref: '#/components/schemas/MealPrice'
+        allergens:
+          type: array
+          description: List of allergens (e.g. gluten, lactose, etc.)
+          items:
+            type: string
+        flags:
+          type: array
+          description: List of flags (e.g. vegan, vegetarian, etc.)
+          items:
+            type: string
+        nutrition:
+          $ref: '#/components/schemas/Nutrition'
+        originalLanguage:
+          $ref: '#/components/schemas/LanguageEnum'
+        static:
+          type: boolean
+          description: Static meals are always available, non-static meals are only available on specific days
+          examples: [ false ]
+        restaurant:
+          $ref: '#/components/schemas/Restaurant'
+        variations:
+          type: array
+          description: Variants or toppings of the meal, like bread, sauce, etc.
+          items:
+            $ref: '#/components/schemas/MealVariation'
+
+    MealVariation:
+      type: object
+      description: A variant or topping of a meal, like bread, sauce, etc.
+      required:
+        - id
+        - name
+        - additional
+        - price
+        - originalLanguage
+        - static
+        - restaurant
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the variant
+        name:
+          $ref: '#/components/schemas/LocalizedString'
+        additional:
+          type: boolean
+          description: Whether the variant is an extra topping rather than a core meal option
+          examples: [ true ]
+        price:
+          $ref: '#/components/schemas/MealPrice'
+        allergens:
+          type: array
+          description: List of allergens (e.g. gluten, lactose, etc.)
+          items:
+            type: string
+        flags:
+          type: array
+          description: List of flags (e.g. vegan, vegetarian, etc.)
+          items:
+            type: string
+        nutrition:
+          $ref: '#/components/schemas/Nutrition'
+        originalLanguage:
+          $ref: '#/components/schemas/LanguageEnum'
+        static:
+          type: boolean
+          description: Static variants are always available, non-static variants are only available on specific days
+          examples: [ false ]
+        restaurant:
+          $ref: '#/components/schemas/Restaurant'
+        parentMealId:
+          type: string
+          description: ID of the parent meal to which this variation belongs
+
+    MealPrice:
+      type: object
+      description: Prices for different types of customers
+      required:
+        - student
+        - employee
+        - guest
+      properties:
+        student:
+          type: number
+          format: float
+          description: Price for students
+          examples: [ 3.9 ]
+        employee:
+          type: number
+          format: float
+          description: Price for employees
+          examples: [ 4.9 ]
+        guest:
+          type: number
+          format: float
+          description: Price for guests
+          examples: [ 5.9 ]
+
+    MealCategory:
+      type: string
+      description: Category of the meal
+      enum:
+        - MAIN
+        - SOUP
+        - SALAD
+        - OTHER
+      examples: [ MAIN ]
+
+    Restaurant:
+      type: string
+      description: Restaurant where meals are offered
+      enum:
+        - INGOLSTADT_MENSA
+        - NEUBURG_MENSA
+        - REIMANNS
+        - CANISIUS
+      examples: [ INGOLSTADT_MENSA ]
+
+    Nutrition:
+      type: object
+      description: Nutritional information about a meal
+      required:
+        - kj
+        - kcal
+        - fat
+        - fatSaturated
+        - carbs
+        - sugar
+        - fiber
+        - protein
+        - salt
+      properties:
+        kj:
+          type: number
+          format: double
+          description: Energy in kilojoules
+          examples: [ 1500 ]
+        kcal:
+          type: number
+          format: double
+          description: Energy in kilocalories
+          examples: [ 358 ]
+        fat:
+          type: number
+          format: double
+          description: Fat in grams
+          examples: [ 12.5 ]
+        fatSaturated:
+          type: number
+          format: double
+          description: Saturated fat in grams
+          examples: [ 4.2 ]
+        carbs:
+          type: number
+          format: double
+          description: Carbohydrates in grams
+          examples: [ 45.3 ]
+        sugar:
+          type: number
+          format: double
+          description: Sugar in grams
+          examples: [ 5.1 ]
+        fiber:
+          type: number
+          format: double
+          description: Fiber in grams
+          examples: [ 3.2 ]
+        protein:
+          type: number
+          format: double
+          description: Protein in grams
+          examples: [ 15.8 ]
+        salt:
+          type: number
+          format: double
+          description: Salt in grams
+          examples: [ 2.1 ]

@@ -8,7 +8,15 @@
     [
       "@semantic-release/exec",
       {
+        "prepareCmd": "npm run build:npm",
         "publishCmd": "mvn --batch-mode --no-transfer-progress deploy -Drevision=${nextRelease.version}"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "pkgRoot": "packages/backend-core-api-v0",
+        "npmPublish": true
       }
     ],
     "@semantic-release/github"

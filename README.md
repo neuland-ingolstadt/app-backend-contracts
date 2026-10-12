@@ -16,20 +16,18 @@ Contract-first API specifications shared by:
 - Generated Java DTOs and server interfaces
 - Contract test harness
 
-## Generated Maven artifacts
+## Generated artifacts
 
-Each OpenAPI specification is generated as a separate Maven library containing
-Jakarta REST server interfaces and DTOs. The libraries are published to GitHub
-Packages whenever a Conventional Commit merged into `main` produces a semantic
-release (`feat`, `fix`, or breaking changes). Commits such as `chore` or `docs`
-do not publish a new artifact version.
+Each OpenAPI specification is published to GitHub Packages whenever a
+Conventional Commit merged into `main` produces a semantic release (`feat`,
+`fix`, or breaking changes). Commits such as `chore` or `docs` do not publish
+a new artifact version.
 
-| OpenAPI specification | Maven coordinates |
-| --- | --- |
-| `oas/backend-core-api-v0.yaml` | `app.neuland:backend-core-api-v0:<version>` |
+| OpenAPI specification | Maven | npm |
+| --- | --- | --- |
+| `oas/backend-core-api-v0.yaml` | `app.neuland:backend-core-api-v0:<version>` | `@neuland-ingolstadt/backend-core-api-v0@<version>` |
 
-To consume an artifact, configure the GitHub Packages repository and add the
-dependency:
+### Maven (Java / Quarkus)
 
 ```xml
 <repositories>
@@ -46,8 +44,26 @@ dependency:
 </dependency>
 ```
 
-Authentication for GitHub Packages is required for private repositories. See
-[GitHub's Maven registry documentation](https://docs.github.com/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry).
+### npm (TypeScript / openapi-fetch)
+
+```ini
+# .npmrc
+@neuland-ingolstadt:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+```bash
+npm install @neuland-ingolstadt/backend-core-api-v0@VERSION
+```
+
+```ts
+import type { paths } from '@neuland-ingolstadt/backend-core-api-v0'
+```
+
+Authentication for GitHub Packages is required. See
+[GitHub's npm registry documentation](https://docs.github.com/packages/working-with-a-github-packages-registry/working-with-the-npm-registry)
+and
+[Maven registry documentation](https://docs.github.com/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry).
 
 ## Legacy reference
 

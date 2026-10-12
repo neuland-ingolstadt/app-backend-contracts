@@ -1,0 +1,45 @@
+{
+  "name": "@neuland-ingolstadt/backend-core-api-v0",
+  "version": "0.0.0-development",
+  "description": "OpenAPI types and schema for Neuland Backend Core API v0",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neuland-ingolstadt/app-backend-contracts.git",
+    "directory": "packages/backend-core-api-v0"
+  },
+  "homepage": "https://github.com/neuland-ingolstadt/app-backend-contracts#readme",
+  "bugs": {
+    "url": "https://github.com/neuland-ingolstadt/app-backend-contracts/issues"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./schema.d.ts",
+  "exports": {
+    ".": {
+      "types": "./schema.d.ts",
+      "default": "./index.js"
+    },
+    "./openapi.yaml": "./openapi.yaml",
+    "./schema.d.ts": "./schema.d.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "schema.d.ts",
+    "openapi.yaml",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node ./scripts/build.mjs"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "keywords": [
+    "neuland",
+    "openapi",
+    "backend-core"
+  ]
+}

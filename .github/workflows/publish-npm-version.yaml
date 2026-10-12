@@ -1,12 +1,7 @@
 name: Publish npm package for existing tag
 
-# Catch-up / bootstrap: publish @neuland-ingolstadt/backend-core-api-v0 for a
-# Git tag that already released Maven (e.g. 1.0.4).
-#
-# Preferred path after Trusted Publishing is configured: OIDC (no token).
-# For the very first npmjs publish only, npm requires the package to exist
-# before OIDC can be configured — publish once locally with `npm login`
-# instead of storing NPM_TOKEN (see package README / team docs).
+# Catch-up: publish @neuland-ingolstadt/backend-core-api-v0 for a Git tag.
+# Uses npm Trusted Publishing (OIDC) — no NPM_TOKEN.
 on:
   workflow_dispatch:
     inputs:
@@ -33,12 +28,11 @@ jobs:
           git fetch --depth=1 origin "refs/tags/v${{ inputs.version }}:refs/tags/v${{ inputs.version }}"
           git checkout "v${{ inputs.version }}" -- oas/backend-core-api-v0.yaml
 
+      # Do NOT pass registry-url (breaks OIDC — see release-contracts.yaml)
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v22.16.0
         with:
           node-version: 24
           cache: npm
-          registry-url: https://registry.npmjs.org
-          scope: '@neuland-ingolstadt'
 
       - run: npm install -g npm@latest
       - run: npm ci

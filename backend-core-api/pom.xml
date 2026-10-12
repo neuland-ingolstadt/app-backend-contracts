@@ -10,7 +10,7 @@
     <version>${revision}</version>
   </parent>
 
-  <artifactId>backend-core-api-v0</artifactId>
+  <artifactId>backend-core-api</artifactId>
   <name>Neuland Backend Core API v0</name>
   <description>Generated server interfaces and models for the Neuland Backend Core API v0.</description>
 

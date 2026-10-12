@@ -25,7 +25,7 @@ a new artifact version.
 
 | OpenAPI specification | Maven | npm |
 | --- | --- | --- |
-| `oas/backend-core-api-v0.yaml` | `app.neuland:backend-core-api-v0:<version>` | `@neuland-ingolstadt/backend-core-api@<version>` |
+| `oas/backend-core-api-v0.yaml` | `app.neuland:backend-core-api:<version>` | `@neuland-ingolstadt/backend-core-api@<version>` |
 
 ### Maven (Java / Quarkus)
 
@@ -39,7 +39,7 @@ a new artifact version.
 
 <dependency>
   <groupId>app.neuland</groupId>
-  <artifactId>backend-core-api-v0</artifactId>
+  <artifactId>backend-core-api</artifactId>
   <version>VERSION</version>
 </dependency>
 ```

@@ -5,7 +5,7 @@ TypeScript types (via `openapi-typescript`) and the OpenAPI 3.1 schema for
 
 Published to [npmjs.com](https://www.npmjs.com/package/@neuland-ingolstadt/backend-core-api)
 (public, no auth). Versioned with the Maven artifact
-`app.neuland:backend-core-api-v0`. Releases are published from GitHub Actions via
+`app.neuland:backend-core-api`. Releases are published from GitHub Actions via
 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC — no
 long-lived tokens).
 

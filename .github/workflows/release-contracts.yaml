@@ -11,12 +11,18 @@ permissions:
   issues: write
   packages: write
   pull-requests: write
-  # Required for npm Trusted Publishing (OIDC) — no NPM_TOKEN
   id-token: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    # Job-level id-token is required for npm Trusted Publishing (OIDC).
+    permissions:
+      contents: write
+      issues: write
+      packages: write
+      pull-requests: write
+      id-token: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_ACTOR: ${{ github.actor }}
@@ -34,7 +40,6 @@ jobs:
           node-version: 24
           cache: npm
 
-      # Trusted Publishing needs npm CLI ≥ 11.5.1
       - run: npm install -g npm@latest
 
       - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1

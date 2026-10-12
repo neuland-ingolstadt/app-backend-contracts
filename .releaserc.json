@@ -24,7 +24,7 @@
       {
         "assets": [
           {
-            "path": "neuland-ingolstadt-backend-core-api-v0-*.tgz",
+            "path": "neuland-ingolstadt-backend-core-api-*.tgz",
             "label": "NPM package tarball (install without GitHub auth)"
           }
         ]

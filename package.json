@@ -4,7 +4,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build:npm": "npm run build -w @neuland-ingolstadt/backend-core-api-v0"
+    "build:npm": "npm run build -w @neuland-ingolstadt/backend-core-api"
   },
   "devDependencies": {
     "@semantic-release/commit-analyzer": "13.0.1",

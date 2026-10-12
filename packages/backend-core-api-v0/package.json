@@ -1,5 +1,5 @@
 {
-  "name": "@neuland-ingolstadt/backend-core-api-v0",
+  "name": "@neuland-ingolstadt/backend-core-api",
   "version": "0.0.0-development",
   "description": "OpenAPI types and schema for Neuland Backend Core API v0",
   "license": "AGPL-3.0-or-later",

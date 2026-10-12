@@ -25,7 +25,7 @@ a new artifact version.
 
 | OpenAPI specification | Maven | npm |
 | --- | --- | --- |
-| `oas/backend-core-api-v0.yaml` | `app.neuland:backend-core-api-v0:<version>` | `@neuland-ingolstadt/backend-core-api-v0@<version>` |
+| `oas/backend-core-api-v0.yaml` | `app.neuland:backend-core-api-v0:<version>` | `@neuland-ingolstadt/backend-core-api@<version>` |
 
 ### Maven (Java / Quarkus)
 
@@ -44,26 +44,21 @@ a new artifact version.
 </dependency>
 ```
 
+Maven uses GitHub Packages (token with `read:packages`). See
+[Maven registry documentation](https://docs.github.com/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry).
+
 ### npm (TypeScript / openapi-fetch)
 
-```ini
-# .npmrc
-@neuland-ingolstadt:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-```
+Public on npmjs.org — no auth required:
 
 ```bash
-npm install @neuland-ingolstadt/backend-core-api-v0@VERSION
+bun add @neuland-ingolstadt/backend-core-api@VERSION
+# or: npm install @neuland-ingolstadt/backend-core-api@VERSION
 ```
 
 ```ts
-import type { paths } from '@neuland-ingolstadt/backend-core-api-v0'
+import type { paths } from '@neuland-ingolstadt/backend-core-api'
 ```
-
-Authentication for GitHub Packages is required. See
-[GitHub's npm registry documentation](https://docs.github.com/packages/working-with-a-github-packages-registry/working-with-the-npm-registry)
-and
-[Maven registry documentation](https://docs.github.com/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry).
 
 ## Legacy reference
 

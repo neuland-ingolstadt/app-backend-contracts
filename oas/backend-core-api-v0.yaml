@@ -2,7 +2,7 @@ openapi: 3.1.1
 
 info:
   title: Neuland Backend Core API
-  version: 0.0.2
+  version: 1.0.4
   license:
     name: GNU Affero General Public License v3.0
     identifier: AGPL-3.0-or-later
@@ -20,7 +20,7 @@ tags:
   - name: roomReports
     description: Creating, viewing and resolving room reports
   - name: universitySports
-    description: Everything regarding Sports
+    description: University sports offerings (schedules, campuses, categories)
   - name: auditLogs
     description: Get the audit log entries
   - name: food
@@ -135,7 +135,7 @@ paths:
           description: Announcement not found
         default:
           $ref: '#/components/responses/Problem'
-  /room-reports: 
+  /room-reports:
     post:
       operationId: createRoomReport
       tags: [ roomReports ]
@@ -157,7 +157,7 @@ paths:
                 $ref: '#/components/schemas/RoomReportResponse'
         '400':
           description: Bad request
-        default: 
+        default:
           $ref: '#/components/responses/Problem'
 
     get:
@@ -173,13 +173,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoomReportListResponse' 
+                $ref: '#/components/schemas/RoomReportListResponse'
         '401':
           description: Unauthorized
         default:
           $ref: '#/components/responses/Problem'
 
-  /room-reports/{roomReportId}: 
+  /room-reports/{roomReportId}:
     patch:
       operationId: resolveRoomReport
       tags: [ roomReports ]
@@ -187,11 +187,11 @@ paths:
       description: Marks the specified room report as resolved. Only available for admin users
       security:
         - bearerAuth: [ ]
-      parameters: 
+      parameters:
         - $ref: '#/components/parameters/RoomReportId'
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               $ref: '#/components/schemas/RoomReportPatchRequest'
@@ -213,10 +213,11 @@ paths:
       operationId: listSports
       tags: [ universitySports ]
       summary: Get all sports
+      description: Public endpoint, no authentication required. Every sport includes schedule fields (campus, weekday, startTime, etc.).
       security: [ ]
       responses:
         '200':
-          description: Sports
+          description: All university sports with schedule and localization
           content:
             application/json:
               schema:
@@ -415,7 +416,7 @@ components:
       schema:
         type: integer
         format: int64
-      example: 77 
+      example: 77
     SportsId:
       name: sportsId
       in: path
@@ -539,12 +540,7 @@ components:
             - [ STUDENT, EMPLOYEE ]
 
         contents:
-          type: object
-          description: Localized announcement content
-          propertyNames:
-            $ref: '#/components/schemas/LanguageEnum'
-          additionalProperties:
-            $ref: '#/components/schemas/AnnouncementContent'
+          $ref: '#/components/schemas/AnnouncementContents'
 
         startDateTime:
           type: string
@@ -602,12 +598,7 @@ components:
             $ref: '#/components/schemas/UserKindEnum'
 
         contents:
-          type: object
-          description: Localized announcement content
-          propertyNames:
-            $ref: '#/components/schemas/LanguageEnum'
-          additionalProperties:
-            $ref: '#/components/schemas/AnnouncementContent'
+          $ref: '#/components/schemas/AnnouncementContents'
 
         startDateTime:
           type: string
@@ -657,6 +648,59 @@ components:
           description: All currently active announcements
           items:
             $ref: '#/components/schemas/Announcement'
+
+    AnnouncementContents:
+      type: object
+      description: Localized announcement content. Both German and English are required.
+      required:
+        - de
+        - en
+      properties:
+        de:
+          $ref: '#/components/schemas/AnnouncementContent'
+        en:
+          $ref: '#/components/schemas/AnnouncementContent'
+      additionalProperties: false
+
+    SportsContents:
+      type: object
+      description: Localized sports content. Both German and English are required.
+      required:
+        - de
+        - en
+      properties:
+        de:
+          $ref: '#/components/schemas/SportsContent'
+        en:
+          $ref: '#/components/schemas/SportsContent'
+      additionalProperties: false
+      examples:
+        - de:
+            title: Basketball
+            description: Offenes Training, keine Anmeldung nötig.
+          en:
+            title: Basketball
+            description: Open training, no registration required.
+
+    LocalizedString:
+      type: object
+      description: Localized text in German and English
+      required:
+        - de
+        - en
+      properties:
+        de:
+          type: string
+          minLength: 1
+          description: German text
+        en:
+          type: string
+          minLength: 1
+          description: English text
+      additionalProperties: false
+      examples:
+        - de: Currywurst mit Pommes
+          en: Curry sausage with fries
 
     PlatformEnum:
       type: string
@@ -717,11 +761,11 @@ components:
           type: string
           format: uri-reference
           description: URI reference identifying the specific occurrence of the problem
-    
-    CreateRoomReportRequest: 
+
+    CreateRoomReportRequest:
       type: object
       description: Input data required to create a new report about incorrect room data
-      required: 
+      required:
         - reason
         - room
       properties:
@@ -732,16 +776,16 @@ components:
             - WRONG_DESCRIPTION
             - WRONG_LOCATION
 
-        description: 
+        description:
           type: [ string, 'null' ]
           description: Description of the report
-          examples: 
+          examples:
             - This room cannot be found here
 
         room:
           type: string
           description: Room name
-          examples: 
+          examples:
             - G201
 
     RoomReportResponse:
@@ -774,7 +818,7 @@ components:
         room:
           type: string
           description: Room name
-          examples: 
+          examples:
             - G201
 
         reason:
@@ -799,8 +843,8 @@ components:
       type: object
       required:
         - roomReports
-      properties: 
-        roomReports: 
+      properties:
+        roomReports:
           type: array
           description: All room reports
           items:
@@ -808,10 +852,10 @@ components:
 
     RoomReportPatchRequest:
       type: object
-      required: 
+      required:
         - resolved
       properties:
-        resolved: 
+        resolved:
           type: boolean
 
     RoomReportCategoryEnum:
@@ -825,35 +869,77 @@ components:
         - OTHER
 
     Sports:
-      allOf:
-        - $ref: '#/components/schemas/SportsWrite'
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              type: integer
-              format: int64
-              description: Unique identifier of the sport
-              examples: [ 21 ]
+      type: object
+      description: A university sports offering with schedule and localization
+      required:
+        - id
+        - contents
+        - campus
+        - location
+        - weekday
+        - startTime
+        - requiresRegistration
+        - sportsCategory
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the sport
+          examples: [ 21 ]
+        contents:
+          $ref: '#/components/schemas/SportsContents'
+        campus:
+          description: Campus at which the sport is being held
+          $ref: '#/components/schemas/CampusEnum'
+          examples: [ INGOLSTADT ]
+        location:
+          type: string
+          minLength: 1
+          description: The place where the sport is being held
+          examples:
+            - 'Sporthalle 1'
+        weekday:
+          description: The day on which the sport takes place
+          $ref: '#/components/schemas/WeekdayEnum'
+          examples: [ MONDAY ]
+        startTime:
+          type: string
+          format: time
+          description: Time when the sport starts (ISO-8601 time, typically with UTC offset, e.g. 18:00:00Z)
+          examples:
+            - '18:00:00Z'
+        endTime:
+          type: [ string, 'null' ]
+          format: time
+          description: Time when the sport ends
+          examples:
+            - '19:30:00Z'
+        requiresRegistration:
+          type: boolean
+          description: Whether the sport requires registration
+          examples: [ true ]
+        invitationLink:
+          type: [ string, 'null' ]
+          format: uri
+          description: Optional invitation link associated with the sport
+          examples:
+            - 'https://chat.example.com/invite/abc123'
+        email:
+          type: [ string, 'null' ]
+          format: idn-email
+          description: Optional contact email for the sport
+          examples:
+            - 'test@example.com'
+        sportsCategory:
+          $ref: '#/components/schemas/SportsCategoryEnum'
+          description: Category the sport belongs to. Is a fixed enum
+          examples: [ BASKETBALL ]
 
     SportsWrite:
       type: object
       properties:
         contents:
-          type: object
-          description: Localized sports content
-          propertyNames:
-            $ref: '#/components/schemas/LanguageEnum'
-          additionalProperties:
-            $ref: '#/components/schemas/SportsContent'
-          examples:
-            - de:
-                title: Basketball
-                description: Offenes Training, keine Anmeldung nötig.
-              en:
-                title: Basketball
-                description: Open training, no registration required.
+          $ref: '#/components/schemas/SportsContents'
 
         campus:
           description: Campus at which the sport is being held
@@ -862,6 +948,7 @@ components:
 
         location:
           type: string
+          minLength: 1
           description: The place where the sport is being held
           examples:
             - 'Sporthalle 1'
@@ -874,7 +961,7 @@ components:
         startTime:
           type: string
           format: time
-          description: Time when the sport starts
+          description: Time when the sport starts (ISO-8601 time, typically with UTC offset, e.g. 18:00:00Z)
           examples:
             - '18:00:00Z'
 
@@ -905,22 +992,47 @@ components:
             - 'test@example.com'
 
         sportsCategory:
-          $ref: '#/components/schemas/SportsCategoryEnum' 
+          $ref: '#/components/schemas/SportsCategoryEnum'
           description: Category the sport belongs to. Is a fixed enum
           examples: [ BASKETBALL ]
 
     SportsCreateRequest:
-      allOf:
-        - $ref: '#/components/schemas/SportsWrite'
-        - type: object
-          required:
-            - contents
-            - campus
-            - location
-            - weekday
-            - startTime
-            - requiresRegistration
-            - sportsCategory
+      type: object
+      description: Payload to create a university sports offering
+      required:
+        - contents
+        - campus
+        - location
+        - weekday
+        - startTime
+        - requiresRegistration
+        - sportsCategory
+      properties:
+        contents:
+          $ref: '#/components/schemas/SportsContents'
+        campus:
+          $ref: '#/components/schemas/CampusEnum'
+        location:
+          type: string
+          minLength: 1
+        weekday:
+          $ref: '#/components/schemas/WeekdayEnum'
+        startTime:
+          type: string
+          format: time
+        endTime:
+          type: [ string, 'null' ]
+          format: time
+        requiresRegistration:
+          type: boolean
+        invitationLink:
+          type: [ string, 'null' ]
+          format: uri
+        email:
+          type: [ string, 'null' ]
+          format: idn-email
+        sportsCategory:
+          $ref: '#/components/schemas/SportsCategoryEnum'
 
     SportsPatchRequest:
       allOf:
@@ -1043,7 +1155,7 @@ components:
         name:
           type: [ string, 'null' ]
           description: Name of the user who made the mutation
-          examples: 
+          examples:
             - Max Mustermann
 
         userId:
@@ -1100,15 +1212,7 @@ components:
           type: string
           description: Unique identifier of the meal on the specific day
         name:
-          type: object
-          description: Localized name of the meal
-          propertyNames:
-            $ref: '#/components/schemas/LanguageEnum'
-          additionalProperties:
-            type: string
-          examples:
-            - de: Currywurst mit Pommes
-              en: Curry sausage with fries
+          $ref: '#/components/schemas/LocalizedString'
         category:
           $ref: '#/components/schemas/MealCategory'
         price:
@@ -1155,15 +1259,7 @@ components:
           type: string
           description: Unique identifier of the variant
         name:
-          type: object
-          description: Localized name of the variant
-          propertyNames:
-            $ref: '#/components/schemas/LanguageEnum'
-          additionalProperties:
-            type: string
-          examples:
-            - de: Mit Sauce Hollandaise
-              en: With hollandaise sauce
+          $ref: '#/components/schemas/LocalizedString'
         additional:
           type: boolean
           description: Whether the variant is an extra topping rather than a core meal option
@@ -1197,6 +1293,10 @@ components:
     MealPrice:
       type: object
       description: Prices for different types of customers
+      required:
+        - student
+        - employee
+        - guest
       properties:
         student:
           type: number
@@ -1233,7 +1333,7 @@ components:
         - REIMANNS
         - CANISIUS
       examples: [ INGOLSTADT_MENSA ]
-    
+
     Nutrition:
       type: object
       description: Nutritional information about a meal

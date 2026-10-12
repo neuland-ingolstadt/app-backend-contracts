@@ -91,6 +91,13 @@
                 <useTags>true</useTags>
                 <openApiNullable>false</openApiNullable>
                 <dateLibrary>java8</dateLibrary>
+                <!--
+                  Default jaxrs-spec emits @JsonCreator with required properties only; optional
+                  fields are setters. Quarkus native then drops those getters from JSON responses
+                  (endTime, invitationLink, email, url, …) even when Hibernate loaded them.
+                  Disable the required-only creator so all properties serialize equally.
+                -->
+                <generateJsonCreator>false</generateJsonCreator>
               </configOptions>
             </configuration>
           </execution>

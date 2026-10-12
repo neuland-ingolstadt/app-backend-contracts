@@ -14,7 +14,7 @@ on:
         default: '1.0.4'
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -42,8 +42,15 @@ jobs:
       - run: npm ci
       - run: npm run build:npm
 
-      - name: Set version and publish
+      - name: Set version, publish, and attach release tarball
         working-directory: packages/backend-core-api-v0
         run: |
           npm version "${{ inputs.version }}" --no-git-tag-version
           npm publish
+          npm pack
+          gh release upload "v${{ inputs.version }}" \
+            "neuland-ingolstadt-backend-core-api-v0-${{ inputs.version }}.tgz" \
+            --repo "${{ github.repository }}" \
+            --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

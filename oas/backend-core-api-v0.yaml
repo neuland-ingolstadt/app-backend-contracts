@@ -8,7 +8,7 @@ info:
     identifier: AGPL-3.0-or-later
 
 servers:
-  - url: https://api.neuland.ing/v0
+  - url: https://core.api.neuland.app
     description: The backend
 
 security:
@@ -32,6 +32,8 @@ paths:
       operationId: listAnnouncements
       tags: [ announcements ]
       summary: Get all announcements
+      description: Public endpoint, no authentication required
+      security: [ ]
       parameters:
         - $ref: '#/components/parameters/IncludeInactiveQueryParam'
       responses:
@@ -78,6 +80,8 @@ paths:
       operationId: getAnnouncement
       tags: [ announcements ]
       summary: Get an announcement by ID
+      description: Public endpoint, no authentication required
+      security: [ ]
       responses:
         '200':
           description: Announcement
@@ -136,6 +140,7 @@ paths:
       operationId: createRoomReport
       tags: [ roomReports ]
       summary: Create a new room report
+      description: Public endpoint, no authentication required
       security: [ ]
       requestBody:
         required: true

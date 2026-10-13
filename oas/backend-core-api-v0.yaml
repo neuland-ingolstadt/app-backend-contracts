@@ -1103,6 +1103,25 @@ components:
         - MARTIAL_ARTS
         - YOGA
         - DANCING
+        - STRENGTH_TRAINING
+        - RUNNING
+        - JOGGING
+        - FRISBEE
+        - SPIKEBALL
+        - FULL_BODY_WORKOUT
+        - DEFENSE
+        - MEDITATION
+        - WATERPOLO
+        - CYCLING
+        - BOXING
+        - KICKBOXING
+        - TABLE_TENNIS
+        - ROWING
+        - BASEBALL
+        - SKATEBOARDING
+        - PARKOUR
+        - HOCKEY
+        - HIKING
         - OTHER
 
     AuditLogListResponse:

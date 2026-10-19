@@ -25,6 +25,8 @@ tags:
     description: Get the audit log entries
   - name: food
     description: Everything about the food offering of mensas and restaurants
+  - name: thiNews
+    description: THI press releases scraped from the university website
 
 paths:
   /announcements:
@@ -381,6 +383,26 @@ paths:
                 $ref: '#/components/schemas/Meal'
         '404':
           description: Meal not found
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /thi/news:
+    get:
+      operationId: listThiNews
+      tags: [ thiNews ]
+      summary: Get THI press releases
+      description: |
+        Public endpoint returning THI press releases scraped from
+        https://www.thi.de/hochschule/aktuelles/presse/.
+        Results are cached in memory; nothing is persisted.
+      security: [ ]
+      responses:
+        '200':
+          description: THI press releases
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThiNewsListResponse'
         default:
           $ref: '#/components/responses/Problem'
 
@@ -1413,3 +1435,50 @@ components:
           format: double
           description: Salt in grams
           examples: [ 2.1 ]
+
+    ThiNewsListResponse:
+      type: object
+      required:
+        - news
+      properties:
+        news:
+          type: array
+          description: THI press releases from the university website
+          items:
+            $ref: '#/components/schemas/ThiNewsItem'
+
+    ThiNewsItem:
+      type: object
+      required:
+        - title
+        - description
+        - date
+      properties:
+        title:
+          type: string
+          description: Headline of the press release
+          examples:
+            - Körpergefühl und Kopfsache
+        description:
+          type: string
+          description: Short teaser text of the press release
+          examples:
+            - 'Yoga, Pilates und eine Auszeit vom Hochschulalltag: Beim Campus Balance Day…'
+        date:
+          type: string
+          format: date-time
+          description: Publication date of the press release
+          examples:
+            - '2026-10-14T14:10:17+02:00'
+        imageUrl:
+          type: [ string, 'null' ]
+          format: uri
+          description: Absolute URL of the teaser image, if available
+          examples:
+            - 'https://www.thi.de/fileadmin/_processed_/image-enhancer/74675/261014_Campus_Balance_Day_Neuburg.JPG-1100x733-crop--0-0-5450-3066.webp'
+        url:
+          type: [ string, 'null' ]
+          format: uri
+          description: Absolute URL of the full press release article
+          examples:
+            - 'https://www.thi.de/hochschule/aktuelles/news/koerpergefuehl-und-kopfsache/'

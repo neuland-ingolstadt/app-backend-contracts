@@ -1179,7 +1179,7 @@ components:
 
         entity:
           type: string
-          description: Entity of the audit log entry
+          description: Type of the mutated entity (API model name)
           examples:
             - RoomReport
             - Announcement
@@ -1195,9 +1195,10 @@ components:
 
         name:
           type: [ string, 'null' ]
-          description: Name of the user who made the mutation
+          description: Human-readable name of the mutated entity (e.g. announcement title, room name). Not the acting user's display name.
           examples:
-            - Max Mustermann
+            - Campus closed on Friday
+            - A101
 
         userId:
           type: [ string, 'null' ]

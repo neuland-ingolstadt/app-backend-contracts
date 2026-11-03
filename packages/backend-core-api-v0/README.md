@@ -25,7 +25,7 @@ import createClient from 'openapi-fetch'
 import type { paths } from '@neuland-ingolstadt/backend-core-api'
 
 const client = createClient<paths>({
-  baseUrl: 'https://core.api.neuland.app'
+  baseUrl: 'https://api.neuland.app/core/v1'
 })
 ```
 

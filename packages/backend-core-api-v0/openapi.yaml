@@ -8,8 +8,10 @@ info:
     identifier: AGPL-3.0-or-later
 
 servers:
+  - url: https://api.neuland.app/core/v1
+    description: Production (shared api.neuland.app)
   - url: https://core.api.neuland.app
-    description: The backend
+    description: Legacy host (kept for existing clients)
 
 security:
   - bearerAuth: [ ]

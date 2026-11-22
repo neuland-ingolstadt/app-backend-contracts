@@ -7,7 +7,7 @@ OpenAPI contracts and generated models for **Neuland Backend 2.0**.
 Contract-first API specifications shared by:
 
 - [app-backend-core](https://github.com/neuland-ingolstadt/app-backend-core)
-- [app-backend-food](https://github.com/neuland-ingolstadt/app-backend-food)
+- [app-food](https://github.com/neuland-ingolstadt/app-food)
 - [app-backend-cloud-gateway](https://github.com/neuland-ingolstadt/app-backend-cloud-gateway)
 
 ## Contents (planned)
@@ -26,6 +26,7 @@ a new artifact version.
 | OpenAPI specification | Maven | npm |
 | --- | --- | --- |
 | `oas/backend-core-api-v0.yaml` | `app.neuland:backend-core-api:<version>` | `@neuland-ingolstadt/backend-core-api@<version>` |
+| `oas/backend-food-api-v0.yaml` | `app.neuland:backend-food-api:<version>` | `@neuland-ingolstadt/backend-food-api@<version>` |
 
 ### Maven (Java / Quarkus)
 

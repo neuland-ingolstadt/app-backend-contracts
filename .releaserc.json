@@ -9,7 +9,7 @@
       "@semantic-release/exec",
       {
         "prepareCmd": "npm run build:npm",
-        "publishCmd": "mvn --batch-mode --no-transfer-progress deploy -Drevision=${nextRelease.version} && npm pack -w @neuland-ingolstadt/backend-core-api"
+        "publishCmd": "mvn --batch-mode --no-transfer-progress deploy -Drevision=${nextRelease.version} && npm pack -w @neuland-ingolstadt/backend-core-api && npm pack -w @neuland-ingolstadt/backend-food-api"
       }
     ],
     [
@@ -20,12 +20,23 @@
       }
     ],
     [
+      "@semantic-release/npm",
+      {
+        "pkgRoot": "packages/backend-food-api-v0",
+        "npmPublish": true
+      }
+    ],
+    [
       "@semantic-release/github",
       {
         "assets": [
           {
             "path": "neuland-ingolstadt-backend-core-api-*.tgz",
-            "label": "NPM package tarball (install without GitHub auth)"
+            "label": "NPM package tarball — core (install without GitHub auth)"
+          },
+          {
+            "path": "neuland-ingolstadt-backend-food-api-*.tgz",
+            "label": "NPM package tarball — food (install without GitHub auth)"
           }
         ]
       }

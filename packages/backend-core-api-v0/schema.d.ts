@@ -163,49 +163,6 @@ export interface paths {
         patch: operations["updateSport"];
         trace?: never;
     };
-    "/food/meals": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get meals
-         * @description Retrieve meals offered by restaurants within a specified date range
-         */
-        get: operations["listMeals"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/food/meals/{mealId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier of the meal on the specific day */
-                mealId: components["parameters"]["MealId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Get a meal by ID
-         * @description Retrieve a specific meal by its unique identifier
-         */
-        get: operations["getMeal"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -603,7 +560,7 @@ export interface components {
          * @description Category the sport belongs to
          * @enum {string}
          */
-        SportsCategoryEnum: "BASKETBALL" | "FOOTBALL" | "CALISTHENICS" | "VOLLEYBALL" | "HANDBALL" | "BOULDERING" | "BADMINTON" | "TENNIS" | "SWIMMING" | "MARTIAL_ARTS" | "YOGA" | "DANCING" | "OTHER";
+        SportsCategoryEnum: "BASKETBALL" | "FOOTBALL" | "CALISTHENICS" | "VOLLEYBALL" | "HANDBALL" | "BOULDERING" | "BADMINTON" | "TENNIS" | "SWIMMING" | "MARTIAL_ARTS" | "YOGA" | "DANCING" | "STRENGTH_TRAINING" | "RUNNING" | "JOGGING" | "FRISBEE" | "SPIKEBALL" | "FULL_BODY_WORKOUT" | "DEFENSE" | "MEDITATION" | "WATERPOLO" | "CYCLING" | "BOXING" | "KICKBOXING" | "TABLE_TENNIS" | "ROWING" | "BASEBALL" | "SKATEBOARDING" | "PARKOUR" | "HOCKEY" | "HIKING" | "OTHER";
         AuditLogListResponse: {
             /** @description All audit log entries */
             auditLogs: components["schemas"]["AuditLogEntry"][];
@@ -621,7 +578,7 @@ export interface components {
              */
             id: number;
             /**
-             * @description Entity of the audit log entry
+             * @description Type of the mutated entity (API model name)
              * @example RoomReport
              * @example Announcement
              */
@@ -634,8 +591,9 @@ export interface components {
             entityId?: number | null;
             operation: components["schemas"]["AuditLogOperationEnum"];
             /**
-             * @description Name of the user who made the mutation
-             * @example Max Mustermann
+             * @description Human-readable name of the mutated entity (e.g. announcement title, room name). Not the acting user's display name.
+             * @example Campus closed on Friday
+             * @example A101
              */
             name?: string | null;
             /**
@@ -655,154 +613,6 @@ export interface components {
          * @enum {string}
          */
         AuditLogOperationEnum: "CREATE" | "UPDATE" | "DELETE";
-        /** @description Meals offered on a specific day, across all requested restaurants */
-        MealDay: {
-            /**
-             * Format: date
-             * @description Day on which the meals are offered
-             */
-            date: string;
-            /** @description Meals offered on this day */
-            meals: components["schemas"]["Meal"][];
-        };
-        /** @description A meal offered by a restaurant on a specific day */
-        Meal: {
-            /** @description Unique identifier of the meal on the specific day */
-            id: string;
-            name: components["schemas"]["LocalizedString"];
-            category: components["schemas"]["MealCategory"];
-            price: components["schemas"]["MealPrice"];
-            /** @description List of allergens (e.g. gluten, lactose, etc.) */
-            allergens?: string[];
-            /** @description List of flags (e.g. vegan, vegetarian, etc.) */
-            flags?: string[];
-            nutrition?: components["schemas"]["Nutrition"];
-            originalLanguage: components["schemas"]["LanguageEnum"];
-            /**
-             * @description Static meals are always available, non-static meals are only available on specific days
-             * @example false
-             */
-            static: boolean;
-            restaurant: components["schemas"]["Restaurant"];
-            /** @description Variants or toppings of the meal, like bread, sauce, etc. */
-            variations?: components["schemas"]["MealVariation"][];
-        };
-        /** @description A variant or topping of a meal, like bread, sauce, etc. */
-        MealVariation: {
-            /** @description Unique identifier of the variant */
-            id: string;
-            name: components["schemas"]["LocalizedString"];
-            /**
-             * @description Whether the variant is an extra topping rather than a core meal option
-             * @example true
-             */
-            additional: boolean;
-            price: components["schemas"]["MealPrice"];
-            /** @description List of allergens (e.g. gluten, lactose, etc.) */
-            allergens?: string[];
-            /** @description List of flags (e.g. vegan, vegetarian, etc.) */
-            flags?: string[];
-            nutrition?: components["schemas"]["Nutrition"];
-            originalLanguage: components["schemas"]["LanguageEnum"];
-            /**
-             * @description Static variants are always available, non-static variants are only available on specific days
-             * @example false
-             */
-            static: boolean;
-            restaurant: components["schemas"]["Restaurant"];
-            /** @description ID of the parent meal to which this variation belongs */
-            parentMealId?: string;
-        };
-        /** @description Prices for different types of customers */
-        MealPrice: {
-            /**
-             * Format: float
-             * @description Price for students
-             * @example 3.9
-             */
-            student: number;
-            /**
-             * Format: float
-             * @description Price for employees
-             * @example 4.9
-             */
-            employee: number;
-            /**
-             * Format: float
-             * @description Price for guests
-             * @example 5.9
-             */
-            guest: number;
-        };
-        /**
-         * @description Category of the meal
-         * @example MAIN
-         * @enum {string}
-         */
-        MealCategory: "MAIN" | "SOUP" | "SALAD" | "OTHER";
-        /**
-         * @description Restaurant where meals are offered
-         * @example INGOLSTADT_MENSA
-         * @enum {string}
-         */
-        Restaurant: "INGOLSTADT_MENSA" | "NEUBURG_MENSA" | "REIMANNS" | "CANISIUS";
-        /** @description Nutritional information about a meal */
-        Nutrition: {
-            /**
-             * Format: double
-             * @description Energy in kilojoules
-             * @example 1500
-             */
-            kj: number;
-            /**
-             * Format: double
-             * @description Energy in kilocalories
-             * @example 358
-             */
-            kcal: number;
-            /**
-             * Format: double
-             * @description Fat in grams
-             * @example 12.5
-             */
-            fat: number;
-            /**
-             * Format: double
-             * @description Saturated fat in grams
-             * @example 4.2
-             */
-            fatSaturated: number;
-            /**
-             * Format: double
-             * @description Carbohydrates in grams
-             * @example 45.3
-             */
-            carbs: number;
-            /**
-             * Format: double
-             * @description Sugar in grams
-             * @example 5.1
-             */
-            sugar: number;
-            /**
-             * Format: double
-             * @description Fiber in grams
-             * @example 3.2
-             */
-            fiber: number;
-            /**
-             * Format: double
-             * @description Protein in grams
-             * @example 15.8
-             */
-            protein: number;
-            /**
-             * Format: double
-             * @description Salt in grams
-             * @example 2.1
-             */
-            salt: number;
-        };
     };
     responses: {
         /** @description An error occurred */
@@ -843,20 +653,6 @@ export interface components {
          * @example eyJpZCI6MTAwfQ
          */
         AuditLogCursor: string;
-        /**
-         * @description Restaurant(s) for which to retrieve meals
-         * @example [
-         *       "INGOLSTADT_MENSA",
-         *       "REIMANNS"
-         *     ]
-         */
-        Restaurants: components["schemas"]["Restaurant"][];
-        /** @description Start date for which to retrieve meals (inclusive) */
-        MealDateFrom: string;
-        /** @description End date for which to retrieve meals (inclusive) */
-        MealDateTo: string;
-        /** @description Unique identifier of the meal on the specific day */
-        MealId: string;
     };
     requestBodies: never;
     headers: never;
@@ -1358,78 +1154,6 @@ export interface operations {
                 content?: never;
             };
             /** @description Sport not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            default: components["responses"]["Problem"];
-        };
-    };
-    listMeals: {
-        parameters: {
-            query: {
-                /**
-                 * @description Restaurant(s) for which to retrieve meals
-                 * @example [
-                 *       "INGOLSTADT_MENSA",
-                 *       "REIMANNS"
-                 *     ]
-                 */
-                restaurants: components["parameters"]["Restaurants"];
-                /** @description Start date for which to retrieve meals (inclusive) */
-                mealDateFrom: components["parameters"]["MealDateFrom"];
-                /** @description End date for which to retrieve meals (inclusive) */
-                mealDateTo: components["parameters"]["MealDateTo"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Meals retrieved successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MealDay"][];
-                };
-            };
-            /** @description Bad request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            default: components["responses"]["Problem"];
-        };
-    };
-    getMeal: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier of the meal on the specific day */
-                mealId: components["parameters"]["MealId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Meal retrieved successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Meal"];
-                };
-            };
-            /** @description Meal not found */
             404: {
                 headers: {
                     [name: string]: unknown;

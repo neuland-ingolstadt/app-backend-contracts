@@ -19,6 +19,7 @@
 
   <modules>
     <module>backend-core-api</module>
+    <module>backend-food-api</module>
   </modules>
 
   <build>

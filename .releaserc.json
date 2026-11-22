@@ -23,7 +23,7 @@
       "@semantic-release/npm",
       {
         "pkgRoot": "packages/backend-food-api-v0",
-        "npmPublish": false
+        "npmPublish": true
       }
     ],
     [

@@ -3,9 +3,9 @@
 TypeScript types (via `openapi-typescript`) and the OpenAPI 3.1 schema for
 **Neuland Backend Food API v0**.
 
-Versioned with the Maven artifact `app.neuland:backend-food-api` (GitHub Packages).
-The npm package is versioned in-repo; publishing to npmjs requires Trusted Publishing
-to be enabled for `@neuland-ingolstadt/backend-food-api` first.
+Published to [npmjs.com](https://www.npmjs.com/package/@neuland-ingolstadt/backend-food-api)
+(public, no auth). Versioned with the Maven artifact
+`app.neuland:backend-food-api`.
 
 ## Install
 
